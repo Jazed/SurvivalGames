@@ -1,0 +1,10 @@
+name: SurvivalGames
+version: 0.0.1
+description: Automatic survival games ftw
+author: beechboy2000
+main: me.beechboy2000.survivalgames.SurvivalGames
+softdepend: [VanishNoPacket]
+commands: 
+ sgjoin: 
+ sgstart: 
+ sgstop: 
