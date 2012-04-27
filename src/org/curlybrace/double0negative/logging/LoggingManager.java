@@ -1,4 +1,4 @@
-package org.cbp.double0negative.logging;
+package org.curlybrace.double0negative.logging;
 
 import me.beechboy2000.survivalgames.SurvivalGames;
 
