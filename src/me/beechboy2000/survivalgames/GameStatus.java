@@ -9,4 +9,14 @@ public class GameStatus {
 	
 	public static int playersLeft;
 	
+	
+	
+	
+	
+	
+	//sql connection info
+	public static boolean SQLConnected = false;
+
+
+
 }
