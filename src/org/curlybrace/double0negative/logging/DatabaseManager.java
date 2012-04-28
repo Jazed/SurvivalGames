@@ -93,7 +93,7 @@ public class DatabaseManager {
         log.info("Connecting to database...");
         String host =  p.getConfig().getString("db.host", "localhost");
         int port    =  p.getConfig().getInt("db.port",  3306);
-        String db   =  p.getConfig().getString("db.database", "SurvivalGames_BlockData");
+        String db   =  p.getConfig().getString("db.database", "SurvivalGames");
         String user =  p.getConfig().getString("db.user", "root");
         String pass =  p.getConfig().getString("db.pass",  "");
         return this.connectToDB(host, port, db, user,pass);
