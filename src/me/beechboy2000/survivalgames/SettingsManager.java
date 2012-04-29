@@ -8,6 +8,8 @@ import org.bukkit.plugin.Plugin;
 
 public class SettingsManager {
     
+    //makes the config easily accessible
+    
     private static SettingsManager instance = new SettingsManager();
     Plugin p;
     private SettingsManager(){

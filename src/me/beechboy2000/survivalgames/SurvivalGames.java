@@ -19,15 +19,17 @@ public class SurvivalGames extends JavaPlugin {
 	private BreakEvent blockBreakEvent;
 	private DeathEvent playerDeathEvent;
 	private static File datafolder;
-	
+	private static boolean active = false;
 	
 	 public void onDisable() {
+	    active = false;
 		PluginDescriptionFile pdfFile = this.getDescription();
 		GameStatus.gameRunning = false;
 		this.logger.info("The" + pdfFile.getName() + "version" + pdfFile.getVersion() + "has now been disabled and reset");
 	}
 	 
 	 public void onEnable() {
+	    active = true;
 		PluginManager pm = getServer().getPluginManager();
 		GameStatus.gameRunning = false;
 		QueueManager.getInstance().setup(this);
@@ -42,7 +44,6 @@ public class SurvivalGames extends JavaPlugin {
 		pm.registerEvents(playerDeathEvent, this);
 	    pm.registerEvents(LoggingManager.getInstance(), this);
 	    
-	    datafolder = this.getDataFolder();
 	 }
 	 
 	 
@@ -58,5 +59,9 @@ public class SurvivalGames extends JavaPlugin {
 	 public static File getPluginDataFolder(){
 	     return datafolder;
 	 }
+
+    public static boolean isActive() {
+        return active;
+    }
 	
 }

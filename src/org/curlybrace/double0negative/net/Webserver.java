@@ -21,16 +21,6 @@ public class Webserver extends Thread{
 
             try{
 
-                Socket skt = st.accept();
-
-                String s = "HTTP/1.0 ";
-                s = s + "200 OK";
-                s = s + "\r\n"; 
-                s = s + "Connection: close\r\n"; 
-                s = s + "Server: SimpleHTTPtutorial v0\r\n"; 
-                s = s + "Content-Type: text/html\r\n";
-                s = s + "\r\n<html><b>test</b></html>";
-
                 skt.getOutputStream().write(s.getBytes());
 
 

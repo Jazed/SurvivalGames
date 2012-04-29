@@ -4,6 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import me.beechboy2000.survivalgames.GameManager;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
@@ -50,7 +53,7 @@ public class QueueManager {
     }
 
     class DatabaseDumper extends Thread{
-        PreparedStatement s = dbman.createStatement("INSERT INTO blocks VALUES (?,?,?,?,?,?,?,?)");
+        PreparedStatement s = dbman.createStatement("INSERT INTO blocks VALUES (?,?,?,?,?,?,?,?,?)");
 
         public void run(){
             while(queue.size()>0){
@@ -59,14 +62,15 @@ public class QueueManager {
                     sleep = (sleep>0)? sleep : 1 ;
                     BlockData b = queue.remove(0);
                     try{
-                        s.setString(1,b.getWorld());
-                        s.setInt(2, b.getPrevid());
-                        s.setByte(3, b.getPrevdata());
-                        s.setInt(4, b.getNewid());
-                        s.setByte(5, b.getNewdata());
-                        s.setInt(6, b.getX());
-                        s.setInt(7, b.getY());
-                        s.setInt(8, b.getZ());
+                        s.setInt(1, GameManager.getInstance().getGameOfBlock(b));
+                        s.setString(2,b.getWorld());
+                        s.setInt(3, b.getPrevid());
+                        s.setByte(4, b.getPrevdata());
+                        s.setInt(5, b.getNewid());
+                        s.setByte(6, b.getNewdata());
+                        s.setInt(7, b.getX());
+                        s.setInt(8, b.getY());
+                        s.setInt(9, b.getZ());
 
                         s.execute();
 
