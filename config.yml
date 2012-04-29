@@ -55,10 +55,14 @@ logging:
 #when the player limit is reached, a chest
 #will be placed inside the radius of every 
 #remain player contianing random items for 
+<<<<<<< HEAD
 #that player. If fire-lighting is enabled
 #the a lighting strike will be fired at the
 #location of each player every x seconds to
 #notify the other players of their location
+=======
+#that player
+>>>>>>> 0fbcc28d77fcfe110e112c66900a2f5e1ebcd5f9
 endgame:
   players: 3
   place-chest:
