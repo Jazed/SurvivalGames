@@ -12,7 +12,7 @@ import org.bukkit.util.Vector;
 
 public class Game {
 
-    public enum GameMode {
+    public static enum GameMode {
         DISABLED ,LOADING, INACTIVE, WAITING, 
         STARTING, INGAME, FINISHING, RESETING
     }
@@ -20,7 +20,7 @@ public class Game {
     private GameMode mode = GameMode.DISABLED;
     private ArrayList<Player> activePlayers = new ArrayList<Player>();
     private ArrayList<Player> inactivePlayers = new ArrayList<Player>();
-    private HashMap<String, Integer>gameSettings;
+
     private Arena arena;
     private int gameID;
     private FileConfiguration c;
@@ -28,12 +28,9 @@ public class Game {
 
 
 
-    public Game(int gameid, HashMap<String, Integer> settings){
+    public Game(int gameid){
         gameID = gameid;
-        gameSettings = settings;
         c = SettingsManager.getInstance().getConfig();
-
-
     }
 
 
@@ -52,10 +49,6 @@ public class Game {
 
         arena = new Arena(min,max);
 
-
-
-
-
     }
 
 
@@ -67,8 +60,8 @@ public class Game {
     public boolean addPlayer(Player p){
         if(mode == GameMode.WAITING){
             activePlayers.add(p);
-            if(activePlayers.size() >= gameSettings.get("START_PlayersNeeded"))
-                countdown(gameSettings.get("START_CountdownTime"));
+            if(activePlayers.size() >= c.getInt("auto-start-players"))
+                countdown(c.getInt("auto-start-time"));
             return true;
         }
         return false;
@@ -90,12 +83,13 @@ public class Game {
     }
 
     public void startGame(){
-        
+        mode = GameMode.INGAME;
     }
     public void countdown(int time){
-        
-        for(Player p: activePlayers){
-            p.sendMessage("Game Starting in "+time);
+        if(time<10){
+            for(Player p: activePlayers){
+                p.sendMessage("Game Starting in "+time);
+            }
         }
         if(SurvivalGames.isActive() && time > 1){
             new CountdownThread(time).start();
@@ -118,6 +112,16 @@ public class Game {
             countdown(time-1);
         }
 
+    }
+
+    public boolean isPlayerActive(Player player) {
+        return activePlayers.contains(player);
+    }
+    public boolean hasPlayer(Player p){
+        return activePlayers.contains(p) || inactivePlayers.contains(p);
+    }
+    public GameMode getMode(){
+        return mode;
     }
 
 

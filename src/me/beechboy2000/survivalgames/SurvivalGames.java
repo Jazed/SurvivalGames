@@ -44,6 +44,10 @@ public class SurvivalGames extends JavaPlugin {
 		pm.registerEvents(playerDeathEvent, this);
 	    pm.registerEvents(LoggingManager.getInstance(), this);
 	    
+	    SettingsManager.getInstance().setup(this);
+	    
+	    
+	    
 	 }
 	 
 	 

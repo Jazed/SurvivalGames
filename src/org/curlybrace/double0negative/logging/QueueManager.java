@@ -10,6 +10,7 @@ import me.beechboy2000.survivalgames.GameManager;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 
 public class QueueManager {
@@ -62,7 +63,7 @@ public class QueueManager {
                     sleep = (sleep>0)? sleep : 1 ;
                     BlockData b = queue.remove(0);
                     try{
-                        s.setInt(1, GameManager.getInstance().getGameOfBlock(b));
+                        s.setInt(1, GameManager.getInstance().getBlockGameId(new Vector(b.getX(), b.getY(), b.getZ())));
                         s.setString(2,b.getWorld());
                         s.setInt(3, b.getPrevid());
                         s.setByte(4, b.getPrevdata());
