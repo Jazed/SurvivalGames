@@ -24,6 +24,7 @@ public class Game {
     private Arena arena;
     private int gameID;
     private FileConfiguration c;
+    private FileConfiguration s;
 
 
 
@@ -31,6 +32,9 @@ public class Game {
     public Game(int gameid){
         gameID = gameid;
         c = SettingsManager.getInstance().getConfig();
+
+        s = SettingsManager.getInstance().getSystemConfig();
+        setup();
     }
 
 
@@ -38,17 +42,20 @@ public class Game {
         mode = GameMode.LOADING;
 
 
-        int x = c.getInt("system.games."+gameID+"maxx");
-        int y = c.getInt("system.games."+gameID+"maxy");
-        int z = c.getInt("system.games."+gameID+"maxz");
+        int x = s.getInt("sg-system.arenas."+gameID+".x1");
+        int y = s.getInt("sg-system.arenas."+gameID+".y1");
+        int z = s.getInt("sg-system.arenas."+gameID+".z1");
+        System.out.println(x+ " "+ y +" "+z);
         Vector max = new Vector(x,y,z);
-        x     = c.getInt("system.games."+gameID+"minx");
-        y     = c.getInt("system.games."+gameID+"miny");
-        z     = c.getInt("system.games."+gameID+"minz");
+        x     = s.getInt("sg-system.arenas."+gameID+".x2");
+        y     = s.getInt("sg-system.arenas."+gameID+".y2");
+        z     = s.getInt("sg-system.arenas."+gameID+".z2");
+        System.out.println(x+ " "+ y +" "+z);
         Vector min = new Vector(x,y,z);
 
         arena = new Arena(min,max);
 
+        mode = GameMode.WAITING;
     }
 
 
@@ -81,6 +88,11 @@ public class Game {
 
     public int getID() {
         return gameID;
+    }
+    
+    public void killPlayer(Player p){
+        activePlayers.remove(p);
+        inactivePlayers.add(p);
     }
 
 

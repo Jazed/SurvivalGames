@@ -36,6 +36,8 @@ public class SurvivalGames extends JavaPlugin {
         active = false;
         PluginDescriptionFile pdfFile = this.getDescription();
         GameStatus.gameRunning = false;
+        SettingsManager.getInstance().saveSpawns();
+        SettingsManager.getInstance().saveSystemConfig();
         this.logger.info("The" + pdfFile.getName() + "version" + pdfFile.getVersion() + "has now been disabled and reset");
     }
 
@@ -54,24 +56,18 @@ public class SurvivalGames extends JavaPlugin {
 
         pm.registerEvents(LoggingManager.getInstance(), this);
 
-        setCommands();
 
         SettingsManager.getInstance().setup(this);
         GameManager.getInstance().setup(this);
+        
+        setCommands();
+
 
 
     }
 
     public void setCommands(){
-        getCommand("survivalgames").setExecutor(new AddPlayer());
-        getCommand("survivalgames").setExecutor(new CreateArena());
-        getCommand("survivalgames").setExecutor(new Join());
-        //    getCommand("survivalgames").setExecutor(new Leave());
-        getCommand("survivalgames").setExecutor(new SetLobby());
-        //     getCommand("survivalgames").setExecutor(new SetSpawn());
-        getCommand("survivalgames").setExecutor(new Start());
-        getCommand("survivalgames").setExecutor(new Stop());
-
+        getCommand("survivalgames").setExecutor(new CommandHandler(this));
     }
 
 

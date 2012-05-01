@@ -19,7 +19,10 @@ public class SettingsManager {
     private static SettingsManager instance = new SettingsManager();
     private static Plugin p;
     private FileConfiguration spawns;
+    private FileConfiguration system;
+
     private File f;
+    private File f2;
 
     private SettingsManager(){
 
@@ -36,22 +39,63 @@ public class SettingsManager {
         p.saveDefaultConfig();
         
         f = new File(p.getDataFolder(),"spawns.yml");
+        f2 = new File(p.getDataFolder(),"system.yml");
+        try{
+        if(!f.exists())
+            f.createNewFile();
+        if(!f2.exists())
+            f2.createNewFile();
+        }catch(Exception e){}
+        reloadSystem();
         reloadSpawns();
     }
 
+    public void set(String arg0, Object arg1){
+        p.getConfig().set(arg0, arg1);
+    }
+    
     public FileConfiguration getConfig(){
         return p.getConfig();
     }
+    
+    public FileConfiguration getSystemConfig(){
+        return system;
+    }
+    
     public void saveConfig(){
-        p.saveConfig();
+       // p.saveConfig();
     }
     
     public static World getGameWorld(){
-        return p.getServer().getWorld(SettingsManager.getInstance().getConfig().getString("system.world"));
+        if(SettingsManager.getInstance().getSystemConfig().getString("sg-system.world") == null)
+            return null;
+        return p.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("sg-system.world"));
     }
     
     public void reloadSpawns(){
         spawns = YamlConfiguration.loadConfiguration(f);
+    }
+    
+    public void reloadSystem(){
+        system = YamlConfiguration.loadConfiguration(f2);
+    }
+    
+    public void saveSystemConfig(){
+        try {
+            system.save(f2);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    public void saveSpawns(){
+        try {
+            spawns.save(f);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
     public int getSpawnCount(int gameid){

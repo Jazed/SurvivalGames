@@ -2,26 +2,13 @@ package me.beechboy2000.survivalgames.commands;
 
 import me.beechboy2000.survivalgames.GameManager;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class Join implements CommandExecutor{
+public class Join implements SubCommand{
 
-    public boolean onCommand(CommandSender sender, Command cmd1, String commandLabel, String[] args){
-        String cmd = cmd1.getName();
-        Player player = null;
-        if (sender instanceof Player) {
-            player = (Player) sender;
-        }
+    public boolean onCommand(Player player, String[] args) {
 
-        if(args[0].equalsIgnoreCase("join")){
-
-            GameManager.getInstance().autoAddPlayer(player);
-
-        }
-
+        GameManager.getInstance().autoAddPlayer(player);
 
         return true;
 

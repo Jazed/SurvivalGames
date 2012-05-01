@@ -15,6 +15,8 @@ public class MoveEvent implements Listener{
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void outOfBoundsHandler(PlayerMoveEvent e){
+        if(SettingsManager.getGameWorld() == null)
+            return;
         if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
             return;
         if(!GameManager.getInstance().isPlayerActive(e.getPlayer()))

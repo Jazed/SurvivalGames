@@ -36,8 +36,9 @@ public class GameManager {
     
     
     public void LoadGames(){
-       FileConfiguration c = SettingsManager.getInstance().getConfig();
-       for(int a = 1; a<= c.getInt("system.arenano",0); a++){
+       FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
+       for(int a = 1; a<= c.getInt("sg-system.arenano",0); a++){
+           System.out.println("Loading Arena: "+a);
            games.add(new Game(a));
        }
     }
@@ -63,8 +64,9 @@ public class GameManager {
 
     public boolean isPlayerActive(Player player) {
         for(Game g:games){
-            if(g.isPlayerActive(player))
+            if(g.isPlayerActive(player)){
                 return true;
+            }
         }
         return false;
     }
@@ -75,11 +77,19 @@ public class GameManager {
     
     public GameMode getGameMode(int a){
         for(Game g: games){
-            if(g.getID() == 4){
+            if(g.getID() == a){
                 return g.getMode();
             }
         }
         return null;
+    }
+    
+    public void startGame(int a){
+        for(Game g: games){
+            if(g.getID() == a){
+                g.startGame();
+            }
+        }
     }
     
     public void autoAddPlayer(Player pl){
@@ -100,9 +110,11 @@ public class GameManager {
     }
     
     public void createArenaFromSelection(Player pl){
-        FileConfiguration c = SettingsManager.getInstance().getConfig();
-        if(c.getString("system.world") == null){
-            c.set("system.world", pl.getWorld());
+        FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
+        SettingsManager s = SettingsManager.getInstance();
+        if(c.getString("sg-system.world") == null){
+            c.set("sg-system.world", pl.getWorld().getName());
+            p.saveConfig();
         } 
         
         WorldEditPlugin we = p.getWorldEdit();
@@ -120,27 +132,27 @@ public class GameManager {
         }
         
 
-        int no = c.getInt("system.arenano") + 1;
-        c.set("system.arenano", no);
-        c.set("system.arenas."+no+"x1", max.getBlockX());
-        c.set("system.arenas."+no+"y1", max.getBlockY());
-        c.set("system.arenas."+no+"z1", max.getBlockZ());
-        c.set("system.arenas."+no+"x2", min.getBlockX());
-        c.set("system.arenas."+no+"y2", min.getBlockY());
-        c.set("system.arenas."+no+"z2", min.getBlockZ());
+        int no = c.getInt("sg-system.arenano") + 1;
+        c.set("sg-system.arenano", no);
+        c.set("sg-system.arenas."+no+".x1", max.getBlockX());
+        c.set("sg-system.arenas."+no+".y1", max.getBlockY());
+        c.set("sg-system.arenas."+no+".z1", max.getBlockZ());
+        c.set("sg-system.arenas."+no+".x2", min.getBlockX());
+        c.set("sg-system.arenas."+no+".y2", min.getBlockY());
+        c.set("sg-system.arenas."+no+".z2", min.getBlockZ());
         
-        
+        SettingsManager.getInstance().saveSystemConfig();
         
         hotAddArena(no);
         
-        p.saveConfig();
         
-        pl.sendMessage(ChatColor.GREEN+"Arena ID "+no+"Succesfully added");
+        pl.sendMessage(ChatColor.GREEN+"Arena ID "+no+" Succesfully added");
         
     }
 
     private void hotAddArena(int no) {
         games.add(new Game(no));
+        System.out.println("game added "+ games.size()+" "+SettingsManager.getInstance().getSystemConfig().getInt("gs-system.arenano"));
     }
     
     

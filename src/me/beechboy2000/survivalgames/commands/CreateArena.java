@@ -7,18 +7,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CreateArena implements CommandExecutor{
+public class CreateArena implements SubCommand{
 
-    public boolean onCommand(CommandSender sender, Command cmd1, String commandLabel, String[] args){
-        String cmd = cmd1.getName();
-        Player player = null;
-        if (sender instanceof Player) {
-            player = (Player) sender;
-        }
+    public boolean onCommand(Player player, String[] args) {
 
-        if(args[0].equalsIgnoreCase("createarena")){
-            GameManager.getInstance().createArenaFromSelection(player);
-        }
+        GameManager.getInstance().createArenaFromSelection(player);
+
         return true;
     }
+
+
 }
