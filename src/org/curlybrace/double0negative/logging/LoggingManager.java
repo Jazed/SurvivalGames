@@ -1,5 +1,6 @@
 package org.curlybrace.double0negative.logging;
 
+import me.beechboy2000.survivalgames.SettingsManager;
 import me.beechboy2000.survivalgames.SurvivalGames;
 
 import org.bukkit.block.Block;
@@ -59,7 +60,7 @@ public class LoggingManager implements  Listener{
 
     public void logBlockCreated(Block b){
         System.out.println(b.getTypeId());
-        if(b.getWorld() == SurvivalGames.getGameWorld()){
+        if(b.getWorld() == SettingsManager.getGameWorld()){
             QueueManager.getInstance().add(
                     new BlockData( 
                             b.getWorld().getName(),
@@ -74,7 +75,7 @@ public class LoggingManager implements  Listener{
     }
 
     public void logBlockDestoryed(Block b){
-        if(b.getWorld() == SurvivalGames.getGameWorld()){
+        if(b.getWorld() == SettingsManager.getGameWorld()){
 
             QueueManager.getInstance().add(
                     new BlockData( 

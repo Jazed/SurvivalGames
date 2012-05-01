@@ -59,12 +59,18 @@ public class Game {
 
     public boolean addPlayer(Player p){
         if(mode == GameMode.WAITING){
-            activePlayers.add(p);
+            if(activePlayers.size() > SettingsManager.getInstance().getSpawnCount(gameID)){
+                activePlayers.add(p);
+            }
             if(activePlayers.size() >= c.getInt("auto-start-players"))
                 countdown(c.getInt("auto-start-time"));
             return true;
         }
         return false;
+    }
+
+    public int getActivePlayers(){
+        return activePlayers.size();
     }
 
     public void removePlayer(Player p){

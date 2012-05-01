@@ -2,6 +2,7 @@ package me.beechboy2000.survivalgames.Events;
 
 import me.beechboy2000.survivalgames.Game;
 import me.beechboy2000.survivalgames.GameManager;
+import me.beechboy2000.survivalgames.SettingsManager;
 import me.beechboy2000.survivalgames.SurvivalGames;
 
 import org.bukkit.event.Event;
@@ -14,7 +15,7 @@ public class MoveEvent implements Listener{
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void outOfBoundsHandler(PlayerMoveEvent e){
-        if(e.getPlayer().getWorld()!=SurvivalGames.getGameWorld())
+        if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
             return;
         if(!GameManager.getInstance().isPlayerActive(e.getPlayer()))
             return;
@@ -27,7 +28,7 @@ public class MoveEvent implements Listener{
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void frozenSpawnHandler(PlayerMoveEvent e){
-        if(e.getPlayer().getWorld()!=SurvivalGames.getGameWorld())
+        if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
             return;
         if(GameManager.getInstance().isPlayerActive(e.getPlayer()) && GameManager.getInstance().getGameMode(GameManager.getInstance().getPlayerGameId(e.getPlayer())) != Game.GameMode.INGAME)
             e.setCancelled(true);

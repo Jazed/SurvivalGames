@@ -1,6 +1,17 @@
 package me.beechboy2000.survivalgames.commands;
 
-public class SetLobby {
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+
+public class SetLobby implements CommandExecutor{
+
+    @Override
+    public boolean onCommand(CommandSender arg0, Command arg1, String arg2,
+            String[] arg3) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
     //TODO: TAKE A W.E SELECTIONA AND SET THE LOBBY. ALSO SET LOBBY WALL
     

@@ -29,7 +29,7 @@ public class LobbyManager extends Thread implements Listener{
         int x2 = c.getInt("system.lobby.sign.x2");
         int y2 = c.getInt("system.lobby.sign.y2");
         int z2 = c.getInt("system.lobby.sign.z2");
-        Location l = new Location(SurvivalGames.getGameWorld(),x1,y1,z1);
+        Location l = new Location(SettingsManager.getGameWorld(),x1,y1,z1);
 
 
         usingx = ((x2 - x1) == 0)? true : false;
@@ -51,7 +51,7 @@ public class LobbyManager extends Thread implements Listener{
                     l = l.add(hdiff/hdiff, 0, 0);
                 else
                     l = l.add(0, 0, hdiff/hdiff);
-                signs[x][y] = (Sign) SurvivalGames.getGameWorld().getBlockAt(l);
+                signs[x][y] = (Sign) SettingsManager.getGameWorld().getBlockAt(l);
             }
             l = l.add(0, vdiff/vdiff, 0);
         }

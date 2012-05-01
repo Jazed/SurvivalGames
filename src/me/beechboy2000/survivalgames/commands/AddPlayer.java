@@ -7,16 +7,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-public class AddPlayer implements CommandExecutor {
-	
-	@Override public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(cmd.getName().equalsIgnoreCase("sgjoin")) {
-			if(GameStatus.gameRunning) {
-			Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "[SurvivalGames] " + ChatColor.YELLOW + sender.getName() + " has joined the game");
-			GameStatus.playersLeft++;
-		}
-	}
-		return false;
-}
+public class AddPlayer implements SubCommand {
+
+    public boolean onCommand(Player player, String[] args) {
+        if(GameStatus.gameRunning) {
+            Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "[SurvivalGames] " + ChatColor.YELLOW + player.getName() + " has joined the game");
+            GameStatus.playersLeft++;
+        }
+        return false;
+
+    }
+
 }

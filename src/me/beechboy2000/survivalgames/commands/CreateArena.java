@@ -1,6 +1,24 @@
 package me.beechboy2000.survivalgames.commands;
 
-public class CreateArena {
+import me.beechboy2000.survivalgames.GameManager;
 
-    //TODO: GET w.e SELECTION AND CREATE A NEW ARENA BASED ON IT
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public class CreateArena implements CommandExecutor{
+
+    public boolean onCommand(CommandSender sender, Command cmd1, String commandLabel, String[] args){
+        String cmd = cmd1.getName();
+        Player player = null;
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        }
+
+        if(args[0].equalsIgnoreCase("createarena")){
+            GameManager.getInstance().createArenaFromSelection(player);
+        }
+        return true;
+    }
 }
