@@ -54,11 +54,12 @@ public class SurvivalGames extends JavaPlugin {
         pm.registerEvents(new MoveEvent(), this);
         pm.registerEvents(new CommandCatch(), this);
 
-        pm.registerEvents(LoggingManager.getInstance(), this);
+       // pm.registerEvents(LoggingManager.getInstance(), this);
 
 
         SettingsManager.getInstance().setup(this);
         GameManager.getInstance().setup(this);
+        LobbyManager.getInstance().setup(this);
         
         setCommands();
 

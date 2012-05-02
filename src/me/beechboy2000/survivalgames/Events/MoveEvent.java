@@ -21,7 +21,7 @@ public class MoveEvent implements Listener{
             return;
         if(!GameManager.getInstance().isPlayerActive(e.getPlayer()))
             return;
-        if(GameManager.getInstance().getBlockGameId(e.getPlayer().getLocation().toVector())==-1)
+        if(GameManager.getInstance().getBlockGameId(e.getPlayer().getLocation().toVector())==-1 && GameManager.getInstance().getGameMode(GameManager.getInstance().getPlayerGameId(e.getPlayer())) == Game.GameMode.WAITING)
             return;
         else
             e.setCancelled(true);

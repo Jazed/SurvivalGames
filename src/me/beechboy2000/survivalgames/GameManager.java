@@ -114,7 +114,7 @@ public class GameManager {
         SettingsManager s = SettingsManager.getInstance();
         if(c.getString("sg-system.world") == null){
             c.set("sg-system.world", pl.getWorld().getName());
-            p.saveConfig();
+            s.saveSystemConfig();
         } 
         
         WorldEditPlugin we = p.getWorldEdit();
@@ -145,7 +145,8 @@ public class GameManager {
         
         hotAddArena(no);
         
-        
+        if(no == 1)
+            pl.sendMessage(ChatColor.GREEN+"SurvivalGame World set to "+ c.getString("sg-system.world"));
         pl.sendMessage(ChatColor.GREEN+"Arena ID "+no+" Succesfully added");
         
     }

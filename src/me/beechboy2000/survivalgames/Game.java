@@ -3,6 +3,7 @@ package me.beechboy2000.survivalgames;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -25,6 +26,7 @@ public class Game {
     private int gameID;
     private FileConfiguration c;
     private FileConfiguration s;
+    private HashMap<Integer, Boolean>spawns = new HashMap<Integer, Boolean>();
 
 
 
@@ -54,6 +56,10 @@ public class Game {
         Vector min = new Vector(x,y,z);
 
         arena = new Arena(min,max);
+        
+        for(int a = 1; a<SettingsManager.getInstance().getSpawnCount(gameID); a++){
+            spawns.put(a, false);
+        }
 
         mode = GameMode.WAITING;
     }
@@ -65,9 +71,25 @@ public class Game {
     }
 
     public boolean addPlayer(Player p){
+        
+        p.sendMessage(gameID+" "+ SettingsManager.getInstance().getSpawnCount(gameID)+" "+activePlayers.size());
         if(mode == GameMode.WAITING){
-            if(activePlayers.size() > SettingsManager.getInstance().getSpawnCount(gameID)){
+            if(activePlayers.size() < SettingsManager.getInstance().getSpawnCount(gameID)){
                 activePlayers.add(p);
+                p.sendMessage("Joining Arena " + gameID);
+                boolean placed = false;
+                for(int a = 1; a<SettingsManager.getInstance().getSpawnCount(gameID); a++){
+                    if(!spawns.get(a)){
+                        p.teleport(SettingsManager.getInstance().getSpawnPoint(gameID, a));
+                        placed = true;
+                    }
+                }
+                if(!placed){
+                    p.sendMessage(ChatColor.RED + "Game "+gameID+" Is Full!");
+                    activePlayers.remove(p);
+                    return false;
+                }
+                
             }
             if(activePlayers.size() >= c.getInt("auto-start-players"))
                 countdown(c.getInt("auto-start-time"));

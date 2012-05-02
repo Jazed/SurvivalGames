@@ -111,7 +111,7 @@ public class SettingsManager {
     public void setSpawn(int gameid, int spawnid, Vector v){
         spawns.set("spawns."+gameid+"."+spawnid+".x", v.getBlockX());
         spawns.set("spawns."+gameid+"."+spawnid+".y", v.getBlockY());
-        spawns.set("spawns."+gameid+"."+spawnid+".Z", v.getBlockZ());
+        spawns.set("spawns."+gameid+"."+spawnid+".z", v.getBlockZ());
         if(spawnid>spawns.getInt("spawns."+gameid+".count")){
             spawns.set("spawns."+gameid+".count", spawnid);
         }

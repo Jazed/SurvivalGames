@@ -9,7 +9,6 @@ public class Join implements SubCommand{
     public boolean onCommand(Player player, String[] args) {
 
         GameManager.getInstance().autoAddPlayer(player);
-
         return true;
 
 
