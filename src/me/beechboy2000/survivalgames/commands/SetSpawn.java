@@ -42,9 +42,10 @@ public class SetSpawn implements SubCommand{
             player.sendMessage(ChatColor.RED+"You must be inside an arnea");
             return true;
         }
+        if(player.hasPermission("survivalgames.admin.setspawn")) {
         SettingsManager.getInstance().setSpawn(game, i, l.toVector());
         player.sendMessage(ChatColor.GREEN+"Spawn "+i +" in arena "+game+" set!");
-
+        }
         return true;
     }
 }

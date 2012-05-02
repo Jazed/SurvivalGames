@@ -11,8 +11,9 @@ public class SetLobby implements SubCommand{
 
     @Override
     public boolean onCommand(Player player, String[] args) {
-
+    	if(player.hasPermission("survivalgames.admin.setlobby")) {
        LobbyManager.getInstance().setLobbySignsFromSelection(player);
+    	}
        return true;
     }
 

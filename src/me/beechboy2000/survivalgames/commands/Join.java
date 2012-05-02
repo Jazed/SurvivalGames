@@ -7,8 +7,9 @@ import org.bukkit.entity.Player;
 public class Join implements SubCommand{
 
     public boolean onCommand(Player player, String[] args) {
-
+    	if(player.hasPermission("survivalgames.player.join")) {
         GameManager.getInstance().autoAddPlayer(player);
+    	}
         return true;
 
 
