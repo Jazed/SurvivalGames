@@ -120,5 +120,7 @@ public class SettingsManager {
         } catch (IOException e) {
             
         }
+        GameManager.getInstance().getGame(gameid).addSpawn();
+        
     }
 }

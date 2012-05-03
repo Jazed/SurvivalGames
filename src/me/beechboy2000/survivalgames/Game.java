@@ -28,6 +28,7 @@ public class Game {
     private FileConfiguration s;
     private HashMap<Integer, Boolean>spawns = new HashMap<Integer, Boolean>();
 
+    private int spawnCount = 0;
 
 
 
@@ -59,11 +60,16 @@ public class Game {
         
         for(int a = 1; a<SettingsManager.getInstance().getSpawnCount(gameID); a++){
             spawns.put(a, false);
+            spawnCount = a;
         }
 
         mode = GameMode.WAITING;
     }
 
+    public void addSpawn(){
+        spawnCount++;
+        spawns.put(spawnCount, false);
+    }
 
 
     public GameMode getGameMode(){
@@ -100,6 +106,10 @@ public class Game {
 
     public int getActivePlayers(){
         return activePlayers.size();
+    }
+    
+    public Player[][] getPlayers(){
+        return new Player[][]{activePlayers.toArray(new Player[0]), inactivePlayers.toArray(new Player[0])};
     }
 
     public void removePlayer(Player p){

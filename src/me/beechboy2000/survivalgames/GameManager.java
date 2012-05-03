@@ -19,31 +19,31 @@ public class GameManager {
     static GameManager instance = new GameManager();
     private ArrayList<Game>games = new ArrayList<Game>();
     private SurvivalGames p;
-    
-    
+
+
     private GameManager(){
-        
+
     }
-    
+
     public static GameManager getInstance(){
         return instance;
     }
-    
+
     public void setup(SurvivalGames plugin){
         p = plugin;
         LoadGames();
     }
-    
-    
+
+
     public void LoadGames(){
-       FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
-       for(int a = 1; a<= c.getInt("sg-system.arenano",0); a++){
-           System.out.println("Loading Arena: "+a);
-           games.add(new Game(a));
-       }
+        FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
+        for(int a = 1; a<= c.getInt("sg-system.arenano",0); a++){
+            System.out.println("Loading Arena: "+a);
+            games.add(new Game(a));
+        }
     }
-    
-    
+
+
     public int getBlockGameId(Vector v){
         for(Game g: games){
             if(g.isBlockInArena(v)){
@@ -52,7 +52,7 @@ public class GameManager {
         }
         return -1;
     }
-    
+
     public int getPlayerGameId(Player p){
         for(Game g:games){
             if(g.hasPlayer(p)){
@@ -70,11 +70,20 @@ public class GameManager {
         }
         return false;
     }
-    
+
     public int getGameCount(){
         return games.size();
     }
-    
+
+    public Game getGame(int a){
+        for(Game g: games){
+            if(g.getID() == a){
+                return g;
+            }
+        }
+        return null;
+    }
+
     public GameMode getGameMode(int a){
         for(Game g: games){
             if(g.getID() == a){
@@ -83,7 +92,7 @@ public class GameManager {
         }
         return null;
     }
-    
+
     public void startGame(int a){
         for(Game g: games){
             if(g.getID() == a){
@@ -91,7 +100,7 @@ public class GameManager {
             }
         }
     }
-    
+
     public void autoAddPlayer(Player pl){
         ArrayList<Game>qg = new ArrayList<Game>(5);
         for(Game g: games){
@@ -99,16 +108,16 @@ public class GameManager {
                 qg.add(g);
         }
         //TODO: fancy auto balance algorithm
-        
+
         if(qg.size() == 0){
             pl.sendMessage(ChatColor.RED+"No games to join");
             return;
         }
-        
+
         qg.get(0).addPlayer(pl);
-        
+
     }
-    
+
     public void createArenaFromSelection(Player pl){
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
         SettingsManager s = SettingsManager.getInstance();
@@ -116,7 +125,7 @@ public class GameManager {
             c.set("sg-system.world", pl.getWorld().getName());
             s.saveSystemConfig();
         } 
-        
+
         WorldEditPlugin we = p.getWorldEdit();
         Selection sel = we.getSelection(pl);
         if(sel == null){
@@ -125,12 +134,12 @@ public class GameManager {
         }
         Location max = sel.getMaximumPoint();
         Location min = sel.getMinimumPoint();
-        
+
         if(max.getWorld()!=SettingsManager.getGameWorld() || min.getWorld()!=SettingsManager.getGameWorld()){
             pl.sendMessage(ChatColor.RED+"Wrong World!");
             return;
         }
-        
+
 
         int no = c.getInt("sg-system.arenano") + 1;
         c.set("sg-system.arenano", no);
@@ -140,21 +149,21 @@ public class GameManager {
         c.set("sg-system.arenas."+no+".x2", min.getBlockX());
         c.set("sg-system.arenas."+no+".y2", min.getBlockY());
         c.set("sg-system.arenas."+no+".z2", min.getBlockZ());
-        
+
         SettingsManager.getInstance().saveSystemConfig();
-        
+
         hotAddArena(no);
-        
+
         if(no == 1)
             pl.sendMessage(ChatColor.GREEN+"SurvivalGame World set to "+ c.getString("sg-system.world"));
         pl.sendMessage(ChatColor.GREEN+"Arena ID "+no+" Succesfully added");
-        
+
     }
 
     private void hotAddArena(int no) {
         games.add(new Game(no));
         System.out.println("game added "+ games.size()+" "+SettingsManager.getInstance().getSystemConfig().getInt("gs-system.arenano"));
     }
-    
-    
+
+
 }

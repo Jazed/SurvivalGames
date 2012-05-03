@@ -17,12 +17,16 @@ public class SetSpawn implements SubCommand{
 
     
     public SetSpawn(){
+    }
+
+    public void loadNextSpawn(){
         for(int a = 1; a<=GameManager.getInstance().getGameCount();a++){
             next.put(a, SettingsManager.getInstance().getSpawnCount(a)+1);
         }
     }
-
+    
     public boolean onCommand(Player player, String[] args) {
+        loadNextSpawn();
         System.out.println("settings spawn");
         Location l =  player.getLocation();
         int game =  GameManager.getInstance().getBlockGameId(l.toVector());
@@ -35,8 +39,12 @@ public class SetSpawn implements SubCommand{
             i = next.get(game);
             next.put(game, next.get(game)+1);
         }
-        else if(args[0].equals("([0-9])")){
+        else{
+            try{
             i = Integer.parseInt(args[1]);
+            }catch(Exception e){
+                player.sendMessage(ChatColor.RED+"Malformed input. Must be \"next\" or a number");return false;
+            }
         }
         if(i == -1){
             player.sendMessage(ChatColor.RED+"You must be inside an arnea");

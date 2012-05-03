@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SetLobby implements SubCommand{
+public class SetLobbyWall implements SubCommand{
 
     @Override
     public boolean onCommand(Player player, String[] args) {

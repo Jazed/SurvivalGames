@@ -15,14 +15,6 @@ import org.curlybrace.double0negative.logging.QueueManager;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 import me.beechboy2000.survivalgames.Events.*;
-import me.beechboy2000.survivalgames.commands.AddPlayer;
-import me.beechboy2000.survivalgames.commands.CreateArena;
-import me.beechboy2000.survivalgames.commands.Join;
-import me.beechboy2000.survivalgames.commands.Leave;
-import me.beechboy2000.survivalgames.commands.SetLobby;
-import me.beechboy2000.survivalgames.commands.SetSpawn;
-import me.beechboy2000.survivalgames.commands.Start;
-import me.beechboy2000.survivalgames.commands.Stop;
 
 public class SurvivalGames extends JavaPlugin {
     Logger logger = Logger.getLogger("Minecraft");

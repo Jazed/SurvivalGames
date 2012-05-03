@@ -9,8 +9,9 @@ import java.util.Vector;
 
 import me.beechboy2000.survivalgames.commands.AddPlayer;
 import me.beechboy2000.survivalgames.commands.CreateArena;
+import me.beechboy2000.survivalgames.commands.GameCount;
 import me.beechboy2000.survivalgames.commands.Join;
-import me.beechboy2000.survivalgames.commands.SetLobby;
+import me.beechboy2000.survivalgames.commands.SetLobbyWall;
 import me.beechboy2000.survivalgames.commands.SetSpawn;
 import me.beechboy2000.survivalgames.commands.SubCommand;
 
@@ -38,8 +39,9 @@ public class CommandHandler implements CommandExecutor
         commands.put("addplayer", new AddPlayer());
         // commands.put("leave", new Leave());
         commands.put("join", new Join());
-        commands.put("setlobby", new SetLobby());
+        commands.put("setlobbywall", new SetLobbyWall());
         commands.put("setspawn", new SetSpawn());
+        commands.put("getcount", new GameCount());
 
     }
 
