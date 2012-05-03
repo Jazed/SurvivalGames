@@ -11,7 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 public class BreakEvent implements Listener {
 	
-	public static Material[] allowedBreak = {Material.WORKBENCH, Material.LEAVES, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM};
+	public static Material[] allowedBreak = {Material.LEAVES, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM};
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
