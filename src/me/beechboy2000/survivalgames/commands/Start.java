@@ -13,8 +13,9 @@ import org.bukkit.entity.Player;
 public class Start implements SubCommand {
 	
     public boolean onCommand(Player player, String[] args) {
+    	if(player.hasPermission("survivalgames.mod.start")) {
 		    GameManager.getInstance().startGame(GameManager.getInstance().getPlayerGameId(player));
-		
+    	}		
 		return false;
 	}
 
