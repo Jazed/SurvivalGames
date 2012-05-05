@@ -2,8 +2,12 @@ package com.skitscape.survivalgames;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -173,8 +177,38 @@ public class Game {
     public GameMode getMode(){
         return mode;
     }
-
-
+    
+	World world = SettingsManager.getGameWorld();
+	
+	public void randomTrap() {
+		double xcord;
+		double zcord;
+		double ycord = 80;
+		Random rand = new Random();
+		xcord = rand.nextInt(1000);
+		zcord = rand.nextInt(1000);
+		Location trap = new Location(world, xcord, ycord, zcord);
+		boolean isAir = true;
+		
+		while(isAir == true) {
+			ycord--;
+			Byte blockData = trap.getBlock().getData();
+			if(blockData != 0) {
+				trap.getBlock().setType(Material.AIR);
+				ycord--;
+				trap.getBlock().setType(Material.AIR);
+				ycord--;
+				trap.getBlock().setType(Material.AIR);
+				ycord--;
+				trap.getBlock().setType(Material.LAVA);
+				isAir = false;
+			} else {
+				isAir = true;
+			}
+		}
+		
+	}
+    
 }
 
 
