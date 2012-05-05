@@ -66,10 +66,10 @@ public class SettingsManager {
        // p.saveConfig();
     }
     
-    public static World getGameWorld(){
-        if(SettingsManager.getInstance().getSystemConfig().getString("sg-system.world") == null)
+    public static World getGameWorld(int game){
+        if(SettingsManager.getInstance().getSystemConfig().getString("sg-system."+game+".world") == null)
             return null;
-        return p.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("sg-system.world"));
+        return p.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("sg-system."+game+".world"));
     }
     
     public void reloadSpawns(){
@@ -103,7 +103,7 @@ public class SettingsManager {
     }
     
     public Location getSpawnPoint(int gameid, int spawnid){
-        return new Location(getGameWorld(), 
+        return new Location(getGameWorld(gameid), 
                 spawns.getInt("spawns."+gameid+"."+spawnid+".x"), 
                 spawns.getInt("spawns."+gameid+"."+spawnid+".y"),
                 spawns.getInt("spawns."+gameid+"."+spawnid+".z"));

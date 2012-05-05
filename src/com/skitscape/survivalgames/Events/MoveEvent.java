@@ -17,10 +17,11 @@ public class MoveEvent implements Listener{
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void outOfBoundsHandler(PlayerMoveEvent e){
-        if(SettingsManager.getGameWorld() == null)
+      /*  Optimization for single game world. No longer works since support for multiple worlds was added
+       * if(SettingsManager.getGameWorld() == null)
             return;
         if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
-            return;
+            return;*/
         if(!GameManager.getInstance().isPlayerActive(e.getPlayer()))
             return;
         if(GameManager.getInstance().getGameMode(GameManager.getInstance().getPlayerGameId(e.getPlayer())) == Game.GameMode.WAITING)
@@ -41,8 +42,9 @@ public class MoveEvent implements Listener{
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void frozenSpawnHandler(PlayerMoveEvent e){
-        if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
-            return;
+        /*  Optimization for single game world. No longer works since support for multiple worlds was added
+        *if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
+            return;*/
         if(GameManager.getInstance().getPlayerGameId(e.getPlayer()) == -1)
             return;
         if(GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(e.getPlayer())).getMode() == Game.GameMode.INGAME)

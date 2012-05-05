@@ -1,6 +1,5 @@
-package me.beechboy2000.survivalgames.Events;
+package com.skitscape.survivalgames.Events;
 
-import me.beechboy2000.survivalgames.GameStatus;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,9 +8,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import com.skitscape.survivalgames.GameStatus;
+
 public class PlaceEvent implements Listener {
 	
-	public static Material[] allowedPlace = {Material.LEAVES, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM};
+	public static Material[] allowedPlace = {Material.WORKBENCH, Material.LEAVES, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM};
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {

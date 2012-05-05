@@ -84,12 +84,15 @@ public class Game {
     public boolean addPlayer(Player p){
         
         p.sendMessage(gameID+" "+ SettingsManager.getInstance().getSpawnCount(gameID)+" "+activePlayers.size());
+        if(GameManager.getInstance().getPlayerGameId(p) != -1){
+            p.sendMessage(ChatColor.RED+"Cannot join multiple games!");
+        }
         if(mode == GameMode.WAITING){
             if(activePlayers.size() < SettingsManager.getInstance().getSpawnCount(gameID)){
                 activePlayers.add(p);
                 p.sendMessage("Joining Arena " + gameID);
                 boolean placed = false;
-                for(int a = 1; a<SettingsManager.getInstance().getSpawnCount(gameID); a++){
+                for(int a = 1; a<=SettingsManager.getInstance().getSpawnCount(gameID); a++){
                     if(!spawns.get(a)){
                         p.teleport(SettingsManager.getInstance().getSpawnPoint(gameID, a));
                         placed = true;
@@ -103,6 +106,10 @@ public class Game {
                     return false;
                 }
                 
+            }
+            else{
+                p.sendMessage(ChatColor.RED + "No spawns set for Arena "+gameID+"!");
+                return false;
             }
             if(activePlayers.size() >= c.getInt("auto-start-players"))
                 countdown(c.getInt("auto-start-time"));

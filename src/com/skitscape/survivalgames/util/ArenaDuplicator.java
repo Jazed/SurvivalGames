@@ -63,7 +63,7 @@ public class ArenaDuplicator {
 
     class DupeThread extends Thread{
 
-        World w = SettingsManager.getGameWorld();
+        World w = SettingsManager.getGameWorld(1);
         Vector min;
         Vector max;
         int xoff;
@@ -92,20 +92,19 @@ public class ArenaDuplicator {
                         //  System.out.println(l1);
                         //  System.out.println(l2);
                         //if(w.getBlockTypeIdAt(l1) != w.getBlockTypeIdAt(l2)){
-                          try{
-                        if(l1.getBlock().getTypeId() == l2.getBlock().getTypeId()){
+                        try{
+                            if(l1.getBlock().getTypeId() != l2.getBlock().getTypeId()){
 
-                       }
-                        else{
-                            Chunk c = l2.getChunk();
-                            net.minecraft.server.Chunk chunk = ((CraftChunk) c).getHandle();
+                                Chunk c = l2.getChunk();
+                                net.minecraft.server.Chunk chunk = ((CraftChunk) c).getHandle();
 
-                            chunk.a(l2.getBlockX() & 15, l2.getBlockY() , l2.getBlockZ() & 15, l1.getBlock().getTypeId(), l1.getBlock().getData());
-                            // w.getBlockAt(l2).setTypeId(w.getBlockTypeIdAt(l1));
-                            // w.getBlockAt(l2).setData(w.getBlockAt(l1).getData());
-                        }
-                        background.inc();
-                          }catch(Exception e){e.printStackTrace();}
+                                chunk.a(l2.getBlockX() & 15, l2.getBlockY() , l2.getBlockZ() & 15, l1.getBlock().getTypeId(), l1.getBlock().getData());
+                                // w.getBlockAt(l2).setTypeId(w.getBlockTypeIdAt(l1));
+                                // w.getBlockAt(l2).setData(w.getBlockAt(l1).getData());
+
+                                background.inc();
+                            }
+                        }catch(Exception e){e.printStackTrace();}
                         //    w.getBlockAt(l2).getState().update();
                         //    System.out.println(l2);
                         // }

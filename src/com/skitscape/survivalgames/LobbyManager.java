@@ -2,6 +2,7 @@ package com.skitscape.survivalgames;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -59,10 +60,10 @@ public class LobbyManager  implements Listener{
         byte temp = ((Sign)new Location(p.getServer().getWorld(c.getString("sg-system.lobby.sign.world")),x1,y1,z1).getBlock().getState()).getData().getData();
       //  System.out.println("facing "+temp);
         if(temp == 3 || temp == 4){
-            l = new Location(SettingsManager.getGameWorld(),x1,y1,z1);
+            l = new Location(Bukkit.getWorld(c.getString("sg-system.lobby.sign.world")),x1,y1,z1);
             inc = -1;
         }else{
-            l = new Location(SettingsManager.getGameWorld(),x2,y1,z2);
+            l = new Location(Bukkit.getWorld(c.getString("sg-system.lobby.sign.world")),x2,y1,z2);
             inc = 1;
         }
 
@@ -254,6 +255,7 @@ public class LobbyManager  implements Listener{
         for(int a = 1; a<=GameManager.getInstance().getGameCount();a++){
             signs[b][0].setLine(0, "[SurvivalGames]");
             signs[b][0].setLine(1, "Click to join");
+            signs[b][0].setLine(2, "Arena "+a);
             signs[b][1].setLine(0, "Arena "+a);
             signs[b][1].setLine(1, GameManager.getInstance().getGameMode(a)+"");
             signs[b][1].setLine(2, GameManager.getInstance().getGame(a).getActivePlayers()+"/"+SettingsManager.getInstance().getSpawnCount(a));

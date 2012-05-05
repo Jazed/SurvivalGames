@@ -83,7 +83,7 @@ public class GameManager {
         }
         return null;
     }
-    
+
     public ArrayList<Game> getGames(){
         return games;
     }
@@ -98,11 +98,16 @@ public class GameManager {
     }
 
     public void startGame(int a){
-        for(Game g: games){
-            if(g.getID() == a){
-                g.startGame();
-            }
+        getGame(a).startGame();
+    }
+
+    public void addPlayer(Player p, int g){
+        Game game = getGame(g);
+        if(game == null){
+            p.sendMessage(ChatColor.RED+"Game does not exist");
+            return;
         }
+        getGame(g).addPlayer(p);
     }
 
     public void autoAddPlayer(Player pl){
@@ -121,7 +126,7 @@ public class GameManager {
         qg.get(0).addPlayer(pl);
 
     }
-    
+
     public WorldEditPlugin getWorldEdit(){
         return p.getWorldEdit();
     }
@@ -143,14 +148,15 @@ public class GameManager {
         Location max = sel.getMaximumPoint();
         Location min = sel.getMinimumPoint();
 
-        if(max.getWorld()!=SettingsManager.getGameWorld() || min.getWorld()!=SettingsManager.getGameWorld()){
+       /* if(max.getWorld()!=SettingsManager.getGameWorld() || min.getWorld()!=SettingsManager.getGameWorld()){
             pl.sendMessage(ChatColor.RED+"Wrong World!");
             return;
-        }
+        }*/
 
 
         int no = c.getInt("sg-system.arenano") + 1;
         c.set("sg-system.arenano", no);
+        c.set("sg-system.arenas."+no+".world", max.getWorld().getName());
         c.set("sg-system.arenas."+no+".x1", max.getBlockX());
         c.set("sg-system.arenas."+no+".y1", max.getBlockY());
         c.set("sg-system.arenas."+no+".z1", max.getBlockZ());

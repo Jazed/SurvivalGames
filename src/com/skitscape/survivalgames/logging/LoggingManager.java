@@ -12,7 +12,9 @@ import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.util.Vector;
 
+import com.skitscape.survivalgames.GameManager;
 import com.skitscape.survivalgames.SettingsManager;
 import com.skitscape.survivalgames.SurvivalGames;
 
@@ -48,7 +50,7 @@ public class LoggingManager implements  Listener{
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void blockChanged(BlockBurnEvent e){
-        logBlockDestoryed(e.getBlock());
+        logBlockDestoryed(e.getBlock() );
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void blockChanged(BlockGrowEvent e){
@@ -61,7 +63,7 @@ public class LoggingManager implements  Listener{
 
     public void logBlockCreated(Block b){
         System.out.println(b.getTypeId());
-        if(b.getWorld() == SettingsManager.getGameWorld()){
+        if(GameManager.getInstance().getBlockGameId(b.getLocation().toVector()) != -1){
             QueueManager.getInstance().add(
                     new BlockData( 
                             b.getWorld().getName(),
