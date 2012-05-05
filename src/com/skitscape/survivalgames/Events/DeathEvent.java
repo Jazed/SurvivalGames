@@ -7,7 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import com.skitscape.survivalgames.GameManager;
 import com.skitscape.survivalgames.GameStatus;
 
 public class DeathEvent implements Listener {
@@ -21,8 +20,11 @@ public class DeathEvent implements Listener {
 	@EventHandler
 	public void onPlayerDieEvent(PlayerDeathEvent event) {
 		Player player = (Player)event.getEntity();
-		if(GameManager.getInstance().getPlayerGameId(player)==-1)
-		    return;
-		GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).killPlayer(player);
+		String playerName = player.getDisplayName();
+		if(GameStatus.gameRunning) {
+		Bukkit.getServer().broadcastMessage(playerName + "has died! there are currently " + GameStatus.playersLeft + " players left!");
+		GameStatus.playersLeft--;
+		deathCheck();
+		}
 	}
 }

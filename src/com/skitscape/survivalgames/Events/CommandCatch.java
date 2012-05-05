@@ -18,7 +18,7 @@ public class CommandCatch implements Listener{
             return;
         if(!GameManager.getInstance().isPlayerActive(event.getPlayer()))
             return;
-        else if(m.startsWith("/sg") || m.startsWith("/survivalgames")|| m.startsWith("/hg")||m.startsWith("/hungergames")){
+        else if(m.equalsIgnoreCase("/sg") || m.equalsIgnoreCase("/survivalgames")|| m.equalsIgnoreCase("/hg")||m.equalsIgnoreCase("/hungergames")){
             return;
         }
         event.setCancelled(true);

@@ -14,9 +14,9 @@ import com.skitscape.survivalgames.GameStatus;
 public class Start implements SubCommand {
 	
     public boolean onCommand(Player player, String[] args) {
-		GameManager.getInstance().startGame(GameManager.getInstance().getPlayerGameId(player));
+		    GameManager.getInstance().startGame(GameManager.getInstance().getPlayerGameId(player));
 		
-		return true;
+		return false;
 	}
 
 

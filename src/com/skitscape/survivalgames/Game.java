@@ -2,9 +2,12 @@ package com.skitscape.survivalgames;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -76,10 +79,6 @@ public class Game {
     public GameMode getGameMode(){
         return mode;
     }
-    
-    public Arena getArena(){
-        return arena;
-    }
 
     public boolean addPlayer(Player p){
         
@@ -96,8 +95,6 @@ public class Game {
                     if(!spawns.get(a)){
                         p.teleport(SettingsManager.getInstance().getSpawnPoint(gameID, a));
                         placed = true;
-                        spawns.put(a, true);
-                        break;
                     }
                 }
                 if(!placed){
@@ -126,12 +123,6 @@ public class Game {
         return new Player[][]{activePlayers.toArray(new Player[0]), inactivePlayers.toArray(new Player[0])};
     }
 
-    public ArrayList<Player> getAllPlayers(){
-        ArrayList<Player>all = new ArrayList<Player>();
-        all.addAll(activePlayers);
-        all.addAll(inactivePlayers);
-        return all;
-    }
     public void removePlayer(Player p){
         activePlayers.remove(p);
         inactivePlayers.remove(p);
@@ -145,35 +136,15 @@ public class Game {
     public void killPlayer(Player p){
         activePlayers.remove(p);
         inactivePlayers.add(p);
-       
-        for(Player pl: getAllPlayers()){
-            pl.sendMessage(ChatColor.YELLOW+"Player "+p.getName()+" Died. There are now "+getActivePlayers()+" players remaining!");
-        }
-        if(activePlayers.size() == 1){
-            playerWin(p);
-            endGame();
-        }
     }
 
-    public void playerWin(Player p){
-        Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA+p.getName()+" Won the Survival Games on Arena "+gameID);
-    }
 
     public boolean isBlockInArena(Vector v) {
         return arena.containsBlock(v);
     }
 
-    
-    public void endGame(){
-        mode = GameMode.WAITING;
-    }
-    
     public void startGame(){
-        for(Player pl: activePlayers){
-            pl.sendMessage(ChatColor.AQUA+"Good Luck!");
-        }
         mode = GameMode.INGAME;
-        
     }
     public void countdown(int time){
         if(time<10){
@@ -213,8 +184,38 @@ public class Game {
     public GameMode getMode(){
         return mode;
     }
-
-
+    
+	World world = SettingsManager.getGameWorld();
+	
+	public void randomTrap() {
+		double xcord;
+		double zcord;
+		double ycord = 80;
+		Random rand = new Random();
+		xcord = rand.nextInt(1000);
+		zcord = rand.nextInt(1000);
+		Location trap = new Location(world, xcord, ycord, zcord);
+		boolean isAir = true;
+		
+		while(isAir == true) {
+			ycord--;
+			Byte blockData = trap.getBlock().getData();
+			if(blockData != 0) {
+				trap.getBlock().setType(Material.AIR);
+				ycord--;
+				trap.getBlock().setType(Material.AIR);
+				ycord--;
+				trap.getBlock().setType(Material.AIR);
+				ycord--;
+				trap.getBlock().setType(Material.LAVA);
+				isAir = false;
+			} else {
+				isAir = true;
+			}
+		}
+		
+	}
+    
 }
 
 

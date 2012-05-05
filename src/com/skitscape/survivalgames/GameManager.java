@@ -83,10 +83,13 @@ public class GameManager {
         }
         return null;
     }
+<<<<<<< HEAD
 
     public ArrayList<Game> getGames(){
         return games;
     }
+=======
+>>>>>>> 879e91097d00b53f529c2afc3532bd5f5d8e077a
 
     public GameMode getGameMode(int a){
         for(Game g: games){
@@ -126,10 +129,13 @@ public class GameManager {
         qg.get(0).addPlayer(pl);
 
     }
+<<<<<<< HEAD
 
     public WorldEditPlugin getWorldEdit(){
         return p.getWorldEdit();
     }
+=======
+>>>>>>> 879e91097d00b53f529c2afc3532bd5f5d8e077a
 
     public void createArenaFromSelection(Player pl){
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();

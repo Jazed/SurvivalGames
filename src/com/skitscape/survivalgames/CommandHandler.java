@@ -16,12 +16,10 @@ import org.bukkit.plugin.Plugin;
 
 import com.skitscape.survivalgames.commands.AddPlayer;
 import com.skitscape.survivalgames.commands.CreateArena;
-import com.skitscape.survivalgames.commands.DupeArena;
 import com.skitscape.survivalgames.commands.GameCount;
 import com.skitscape.survivalgames.commands.Join;
 import com.skitscape.survivalgames.commands.SetLobbyWall;
 import com.skitscape.survivalgames.commands.SetSpawn;
-import com.skitscape.survivalgames.commands.Start;
 import com.skitscape.survivalgames.commands.SubCommand;
 
 public class CommandHandler implements CommandExecutor
@@ -45,9 +43,6 @@ public class CommandHandler implements CommandExecutor
         commands.put("setlobbywall", new SetLobbyWall());
         commands.put("setspawn", new SetSpawn());
         commands.put("getcount", new GameCount());
-        commands.put("start", new Start());
-        commands.put("dupearena", new DupeArena());
-
 
     }
 

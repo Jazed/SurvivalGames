@@ -1,7 +1,6 @@
 package com.skitscape.survivalgames.Events;
 
 
-import org.bukkit.Location;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,24 +23,16 @@ public class MoveEvent implements Listener{
             return;*/
         if(!GameManager.getInstance().isPlayerActive(e.getPlayer()))
             return;
-        if(GameManager.getInstance().getGameMode(GameManager.getInstance().getPlayerGameId(e.getPlayer())) == Game.GameMode.WAITING)
+        if(GameManager.getInstance().getBlockGameId(e.getPlayer().getLocation().toVector())==-1 && GameManager.getInstance().getGameMode(GameManager.getInstance().getPlayerGameId(e.getPlayer())) == Game.GameMode.WAITING)
             return;
-        if(GameManager.getInstance().getBlockGameId(e.getPlayer().getLocation().toVector()) == GameManager.getInstance().getPlayerGameId(e.getPlayer()))
-            return;
-        else{
-            Location l = e.getPlayer().getLocation();
-            l.setX(l.getBlockX());
-            l.setY(l.getBlockY());
-            l.setZ(l.getBlockZ());
-            l.setYaw(e.getPlayer().getLocation().getYaw());
-            l.setPitch(e.getPlayer().getLocation().getPitch());
-            e.getPlayer().teleport(l);
-        }
+        else
+            e.setCancelled(true);
 
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void frozenSpawnHandler(PlayerMoveEvent e){
+<<<<<<< HEAD
         /*  Optimization for single game world. No longer works since support for multiple worlds was added
         *if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
             return;*/
@@ -58,5 +49,11 @@ public class MoveEvent implements Listener{
             l.setPitch(e.getPlayer().getLocation().getPitch());
             e.getPlayer().teleport(l);
         }
+=======
+        if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
+            return;
+        if(GameManager.getInstance().isPlayerActive(e.getPlayer()) && GameManager.getInstance().getGameMode(GameManager.getInstance().getPlayerGameId(e.getPlayer())) != Game.GameMode.INGAME)
+            e.setCancelled(true);
+>>>>>>> 879e91097d00b53f529c2afc3532bd5f5d8e077a
     }
 }
