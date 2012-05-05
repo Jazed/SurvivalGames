@@ -83,10 +83,6 @@ public class GameManager {
         }
         return null;
     }
-    
-    public ArrayList<Game> getGames(){
-        return games;
-    }
 
     public GameMode getGameMode(int a){
         for(Game g: games){
@@ -120,10 +116,6 @@ public class GameManager {
 
         qg.get(0).addPlayer(pl);
 
-    }
-    
-    public WorldEditPlugin getWorldEdit(){
-        return p.getWorldEdit();
     }
 
     public void createArenaFromSelection(Player pl){

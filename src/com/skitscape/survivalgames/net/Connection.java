@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
-import me.beechboy2000.survivalgames.SurvivalGames;
+import com.skitscape.survivalgames.SurvivalGames;
 
 public class Connection extends Thread{
 

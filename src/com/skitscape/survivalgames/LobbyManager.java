@@ -40,10 +40,12 @@ public class LobbyManager  implements Listener{
     }
 
     public void loadSigns(){
+        System.out.println("setting sign");
 
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
         if(!c.getBoolean("sg-system.lobby.sign.set"))
             return;
+        System.out.println("setting sign");
 
         boolean usingx = false;
         int hdiff = 0;
@@ -55,9 +57,9 @@ public class LobbyManager  implements Listener{
         int z2 = c.getInt("sg-system.lobby.sign.z2");
         int inc = 0;
         Location l;
-      //  System.out.println(x1+"  "+y1+"  "+z1);
+        System.out.println(x1+"  "+y1+"  "+z1);
         byte temp = ((Sign)new Location(p.getServer().getWorld(c.getString("sg-system.lobby.sign.world")),x1,y1,z1).getBlock().getState()).getData().getData();
-      //  System.out.println("facing "+temp);
+        System.out.println("facing "+temp);
         if(temp == 3 || temp == 4){
             l = new Location(SettingsManager.getGameWorld(),x1,y1,z1);
             inc = -1;
@@ -70,6 +72,7 @@ public class LobbyManager  implements Listener{
         usingx = ((x2 - x1) != 0)? true : false;
         if(usingx){
             hdiff = (x1 - x2)+1;
+            System.out.println("usingx");
         }
         else{
             hdiff = (z1 - z2) +1;
@@ -82,11 +85,13 @@ public class LobbyManager  implements Listener{
         for(int y = vdiff-1; y>=0; y--){
             for(int x = hdiff-1; x>=0;x--){
 
+                System.out.println(l);
                 
                 BlockState b =   p.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("sg-system.lobby.sign.world")).getBlockAt(l).getState();
                 if(b instanceof Sign){
                     signs[y][x] = (Sign)b;
                 }
+                System.out.println("setting sign");
                 if(usingx)
                     l = l.add(inc, 0, 0);
                 else
@@ -166,6 +171,7 @@ public class LobbyManager  implements Listener{
 
                 for(int x = 0; x!=signs[0].length; x++){
 
+                    System.out.println(signs[y][x]);
                     Sign sig = signs[y][x];
                     sig.setLine(a, "==================================================");
                     sig.update();
@@ -204,17 +210,18 @@ public class LobbyManager  implements Listener{
             int x = getSignMidPoint()[1] - (msg.length / 2);
             int lineno = x%3;
             x = x / 4;
+            System.out.println(x);
             for(int a = msg.length-1; a>-1;a--){
                 int y = getSignMidPoint()[0] - (msg[a].length() / 2);
 
-               // System.out.println(msg[a]);
+                System.out.println(msg[a]);
                 char[] line =  msg[a].toCharArray();
                 for(int b = 0;b<line.length;b++){
 
-                    //System.out.println(y/16+"    "+x/4+"     "+(3-x)%4+"     "+x);
+                    System.out.println(y/16+"    "+x/4+"     "+(3-x)%4+"     "+x);
                     Sign sig = signs [x][((y)/16)];
                     sig.setLine(lineno,sig.getLine(lineno)+line[b]);
-                    //System.out.println(sig.getLine(x%4));
+                    System.out.println(sig.getLine(x%4));
                     signs [x][((y)/16)].update();
 
                     y++;
@@ -299,6 +306,7 @@ public class LobbyManager  implements Listener{
 
                 for(int x = 0; x!=signs[0].length; x++){
 
+                    System.out.println(signs[y][x]);
                     Sign sig = signs[y][x];
                     sig.setLine(a, "");
                     sig.update();

@@ -21,14 +21,6 @@ public class Arena {
                 && y >= min.getBlockY() && y < max.getBlockY()+1
                 && z >= min.getBlockZ() && z < max.getBlockZ()+1;
     }
-
-    public Vector getMin() {
-        return min;
-    }
-
-    public Vector getMax() {
-        return max;
-    }
     
     
     
