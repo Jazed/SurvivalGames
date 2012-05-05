@@ -1,5 +1,6 @@
-package com.skitscape.survivalgames.Events;
+package me.beechboy2000.survivalgames.Events;
 
+import me.beechboy2000.survivalgames.GameStatus;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,11 +9,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import com.skitscape.survivalgames.GameStatus;
-
 public class BreakEvent implements Listener {
 	
-	public static Material[] allowedBreak = {Material.WORKBENCH, Material.LEAVES, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM};
+	public static Material[] allowedBreak = {Material.LEAVES, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM};
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
