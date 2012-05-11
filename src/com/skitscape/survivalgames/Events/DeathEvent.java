@@ -2,12 +2,20 @@ package com.skitscape.survivalgames.Events;
 
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
+import com.skitscape.survivalgames.Game;
+import com.skitscape.survivalgames.GameManager;
 import com.skitscape.survivalgames.GameStatus;
+import com.skitscape.survivalgames.SettingsManager;
 
 public class DeathEvent implements Listener {
 	
@@ -18,13 +26,38 @@ public class DeathEvent implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerDieEvent(PlayerDeathEvent event) {
+	public void onPlayerDieEvent(EntityDamageEvent event) {
+	    if(event.getEntity() instanceof Player){}
+	    else 
+	        return;
 		Player player = (Player)event.getEntity();
-		String playerName = player.getDisplayName();
-		if(GameStatus.gameRunning) {
-		Bukkit.getServer().broadcastMessage(playerName + "has died! there are currently " + GameStatus.playersLeft + " players left!");
-		GameStatus.playersLeft--;
-		deathCheck();
+		int gameid = GameManager.getInstance().getPlayerGameId(player);
+		if(gameid==-1)
+		    return;
+		Game game = GameManager.getInstance().getGame(gameid);
+		if(game.getMode() != Game.GameMode.INGAME){
+		    event.setCancelled(true);
+		    return;
+		}
+		if(player.getHealth() <= event.getDamage()){
+		    player.setHealth(20);
+		    Inventory inv = player.getInventory();
+		    Location l = player.getLocation();
+            player.teleport(SettingsManager.getInstance().getLobbySpawn());
+
+		    for(ItemStack i: inv.getContents()){
+		        if(i!=null)
+		            l.getWorld().dropItemNaturally(l, i);
+		    }
+		    
+		      GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).killPlayer(player);
+
 		}
 	}
+
+	
+	
+	
+	
+	
 }

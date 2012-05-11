@@ -8,9 +8,11 @@ import java.sql.Statement;
 import java.util.logging.Logger;
 
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import com.skitscape.survivalgames.GameStatus;
+import com.skitscape.survivalgames.SettingsManager;
 
 
 public class DatabaseManager {
@@ -30,7 +32,7 @@ public class DatabaseManager {
     
     public void setup(Plugin p){
         log = p.getLogger();
-        GameStatus.SQLConnected = setup();
+        setup();
     }
     
     
@@ -45,7 +47,6 @@ public class DatabaseManager {
         {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + db, user, pass);
-            log.info("Connected to database.");
             return true;
         }
         catch (ClassNotFoundException e)
@@ -92,11 +93,12 @@ public class DatabaseManager {
     private boolean setup()
     {
         log.info("Connecting to database...");
-        String host =  p.getConfig().getString("db.host", "localhost");
-        int port    =  p.getConfig().getInt("db.port",  3306);
-        String db   =  p.getConfig().getString("db.database", "SurvivalGames");
-        String user =  p.getConfig().getString("db.user", "root");
-        String pass =  p.getConfig().getString("db.pass",  "");
+        FileConfiguration c = SettingsManager.getInstance().getConfig();
+        String host =  c.getString("sql.host", "localhost");
+        int port    =  c.getInt("sql.port",  3306);
+        String db   =  c.getString("sql.database", "SurvivalGames");
+        String user =  c.getString("sql.user", "root");
+        String pass =  c.getString("sql.pass",  "");
         return this.connectToDB(host, port, db, user,pass);
     }
 

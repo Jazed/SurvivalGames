@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -67,9 +68,9 @@ public class SettingsManager {
     }
     
     public static World getGameWorld(int game){
-        if(SettingsManager.getInstance().getSystemConfig().getString("sg-system."+game+".world") == null)
+        if(SettingsManager.getInstance().getSystemConfig().getString("sg-system.arenas."+game+".world") == null)
             return null;
-        return p.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("sg-system."+game+".world"));
+        return p.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("sg-system.arenas."+game+".world"));
     }
     
     public void reloadSpawns(){
@@ -100,6 +101,45 @@ public class SettingsManager {
     
     public int getSpawnCount(int gameid){
         return spawns.getInt("spawns."+gameid+".count");
+    }
+    
+    
+    
+    //TODO: Implement per-arena settings aka flags
+    public HashMap<String, Object> getGameFlags(int a){
+        HashMap<String, Object>flags = new HashMap<String, Object>();
+        
+        flags.put("AUTOSTART_PLAYERS", system.getInt("sg-system.arenas."+a+".flags.autostart"));
+        flags.put("AUTOSTART_VOTE", system.getInt("sg-system.arenas."+a+".flags.vote"));
+        flags.put("ENDGAME_ENABLED", system.getBoolean("sg-system.arenas."+a+".flags.endgame-enabled"));
+        flags.put("ENDGAME_PLAYERS", system.getInt("sg-system.arenas."+a+".flags.endgame-players"));
+
+        return flags;
+        
+    }
+    public void saveGameFlags(HashMap<String, Object>flags, int a){
+        
+        system.set("sg-system.arenas."+a+".flags.autostart", flags.get("AUTOSTART_PLAYERS"));
+        system.set("sg-system.arenas."+a+".flags.vote", flags.get("AUTOSTART_VOTE"));
+        system.set("sg-system.arenas."+a+".flags.autostart", flags.get("AUTOSTART_PLAYERS"));
+        system.set("sg-system.arenas."+a+".flags.autostart", flags.get("AUTOSTART_PLAYERS"));
+
+        
+        
+    }
+    
+    public Location getLobbySpawn(){
+        return new Location(Bukkit.getWorld(system.getString("sg-system.lobby.spawn.world")), 
+            system.getInt("sg-system.lobby.spawn.x"), 
+            system.getInt("sg-system.lobby.spawn.y"),
+            system.getInt("sg-system.lobby.spawn.z"));
+    }
+    
+    public void setLobbySpawn(Location l){
+            system.set("sg-system.lobby.spawn.world", l.getWorld().getName());
+            system.set("sg-system.lobby.spawn.x", l.getBlockX());
+            system.set("sg-system.lobby.spawn.y", l.getBlockY());
+            system.set("sg-system.lobby.spawn.z", l.getBlockZ());
     }
     
     public Location getSpawnPoint(int gameid, int spawnid){

@@ -14,15 +14,14 @@ import com.skitscape.survivalgames.Events.*;
 import com.skitscape.survivalgames.logging.DatabaseManager;
 import com.skitscape.survivalgames.logging.LoggingManager;
 import com.skitscape.survivalgames.logging.QueueManager;
+import com.skitscape.survivalgames.net.Webserver;
 
 
 public class SurvivalGames extends JavaPlugin {
-    Logger logger = Logger.getLogger("Minecraft");
-    private PlaceEvent blockPlaceEvent;
-    private BreakEvent blockBreakEvent;
-    private DeathEvent playerDeathEvent;
+    Logger logger;
     private static File datafolder;
     private static boolean active = false;
+    public static boolean dbcon = false;
 
     public void onDisable() {
         active = false;
@@ -34,27 +33,48 @@ public class SurvivalGames extends JavaPlugin {
     }
 
     public void onEnable() {
+        logger = this.getLogger();
         active = true;
         PluginManager pm = getServer().getPluginManager();
-        //QueueManager.getInstance().setup(this);
-        //DatabaseManager.getInstance().setup(this);
+        setCommands();
 
 
+        SettingsManager.getInstance().setup(this);
+        try{
+            DatabaseManager.getInstance().setup(this);
+            QueueManager.getInstance().setup(this);
+            dbcon = true;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            dbcon = false;
+            logger.severe("!!!Failed to connect to the database. Please check the settings and try again!!!");
+            return;
+        }
+        finally{
+            LobbyManager.getInstance().setup(this);
+
+        }
+        
+        
         pm.registerEvents(new PlaceEvent(), this);
         pm.registerEvents(new BreakEvent(), this);
         pm.registerEvents(new DeathEvent(), this);
         pm.registerEvents(new MoveEvent(), this);
         pm.registerEvents(new CommandCatch(), this);
         pm.registerEvents(new SignClickEvent(), this);
+        pm.registerEvents(new ChestReplaceEvent(), this);
+        pm.registerEvents(new LogoutEvent(), this);
+        pm.registerEvents(new JoinEvent(), this);
+        pm.registerEvents(new TeleportEvent(), this);
+        pm.registerEvents(LoggingManager.getInstance(), this);
 
-       // pm.registerEvents(LoggingManager.getInstance(), this);
 
 
-        SettingsManager.getInstance().setup(this);
-        GameManager.getInstance().setup(this);
-        LobbyManager.getInstance().setup(this);
+        new Webserver().start();
         
-        setCommands();
+
+        GameManager.getInstance().setup(this);
 
 
 

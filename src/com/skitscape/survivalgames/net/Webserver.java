@@ -4,27 +4,27 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Webserver extends Thread{
+import com.skitscape.survivalgames.SurvivalGames;
 
+public class Webserver extends Thread {
 
+    public void run() {
+        try{
+        ServerSocket st =  new ServerSocket(880);
 
+            while (SurvivalGames.isActive()) {
 
+                Socket skt = st.accept();
 
+                // Spin off request to a new thread to be handled
+                Connection c = new Connection(skt);
+                c.start();
+            }
+        }catch (Exception e) {
 
-    public void run(){
-        ServerSocket st;
-        try {
-            st = new ServerSocket(880);
-        } catch (IOException e1) { }
-
-        while(true){
-
-            try{
-
-                skt.getOutputStream().write(s.getBytes());
-
-
-            }catch(Exception e){e.printStackTrace();}
+            e.printStackTrace();
         }
+
     }
 }
+

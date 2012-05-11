@@ -27,10 +27,15 @@ public class SetSpawn implements SubCommand{
     }
     
     public boolean onCommand(Player player, String[] args) {
+        
+        if(!player.hasPermission("sg.arena.setspawn") && !player.isOp()){
+            player.sendMessage(ChatColor.RED+"No Permission");
+            return true;
+        }
         loadNextSpawn();
         System.out.println("settings spawn");
         Location l =  player.getLocation();
-        int game =  GameManager.getInstance().getBlockGameId(l.toVector());
+        int game =  GameManager.getInstance().getBlockGameId(l);
         System.out.println(game+" "+next.size());
         if(game == -1){
             player.sendMessage(ChatColor.RED+"Must be in an arena!");

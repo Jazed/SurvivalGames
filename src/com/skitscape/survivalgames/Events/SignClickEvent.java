@@ -1,5 +1,6 @@
 package com.skitscape.survivalgames.Events;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -18,6 +19,8 @@ public class SignClickEvent implements Listener{
     public void clickHandler(PlayerInteractEvent e){
 
         if(!(e.getAction()==Action.RIGHT_CLICK_BLOCK || e.getAction()==Action.LEFT_CLICK_BLOCK)) return;
+        
+
         Block clickedBlock = e.getClickedBlock(); 
         if(!(clickedBlock.getType()==Material.SIGN || clickedBlock.getType()==Material.SIGN_POST || clickedBlock.getType()==Material.WALL_SIGN)) return;
         Sign thisSign = (Sign) clickedBlock.getState();
@@ -25,6 +28,14 @@ public class SignClickEvent implements Listener{
         String[] lines = thisSign.getLines();
         if(lines.length<3) return;
         if(lines[0].equalsIgnoreCase("[SurvivalGames]")) {
+            e.setCancelled(true);
+            if(e.getPlayer().hasPermission("sg.arena.join") || e.getPlayer().isOp()){
+
+            }
+            else{
+                e.getPlayer().sendMessage(ChatColor.RED+"No Permission");
+                return;
+            }
             try{
                 if(lines[2].equalsIgnoreCase("Auto Assign")){
                     GameManager.getInstance().autoAddPlayer(e.getPlayer());

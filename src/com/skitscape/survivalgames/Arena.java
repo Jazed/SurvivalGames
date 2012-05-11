@@ -1,19 +1,23 @@
 package com.skitscape.survivalgames;
 
+import org.bukkit.Location;
 import org.bukkit.util.Vector;
+
 
 public class Arena {
 
-    Vector min;
-    Vector max;
+    Location min;
+    Location max;
 
-    public Arena(Vector min, Vector max){
+    public Arena(Location min, Location max){
         this.max = max;
         this.min = min;
 
     }
 
-    public boolean containsBlock(Vector v){
+    public boolean containsBlock(Location v){
+        if(v.getWorld() != min.getWorld())
+            return false;
         final double x = v.getX();
         final double y = v.getY();
         final double z = v.getZ();
@@ -24,7 +28,13 @@ public class Arena {
     
     
     
+    public Location getMax(){
+        return max;
+    }
     
+    public Location getMin(){
+        return min;
+    }
     
     
 }

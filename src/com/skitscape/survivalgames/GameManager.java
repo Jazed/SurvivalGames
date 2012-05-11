@@ -1,10 +1,13 @@
 package com.skitscape.survivalgames;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -19,6 +22,7 @@ public class GameManager {
     static GameManager instance = new GameManager();
     private ArrayList<Game>games = new ArrayList<Game>();
     private SurvivalGames p;
+    public static HashMap<Integer, HashSet<Block>>openedChest = new HashMap<Integer, HashSet<Block>>();
 
 
     private GameManager(){
@@ -32,8 +36,12 @@ public class GameManager {
     public void setup(SurvivalGames plugin){
         p = plugin;
         LoadGames();
+        for(Game g:getGames()){
+            openedChest.put(g.getID(), new HashSet<Block>());
+        }
     }
 
+    
 
     public void LoadGames(){
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
@@ -44,7 +52,7 @@ public class GameManager {
     }
 
 
-    public int getBlockGameId(Vector v){
+    public int getBlockGameId(Location v){
         for(Game g: games){
             if(g.isBlockInArena(v)){
                 return g.getID();
@@ -70,6 +78,14 @@ public class GameManager {
         }
         return false;
     }
+    public boolean isPlayerInactive(Player player) {
+        for(Game g:games){
+            if(g.isPlayerActive(player)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public int getGameCount(){
         return games.size();
@@ -83,14 +99,24 @@ public class GameManager {
         }
         return null;
     }
-<<<<<<< HEAD
 
+    public void removePlayer(Player p){
+       
+        getGame(getPlayerGameId(p)).removePlayer(p);
+    }
+    
+    public void disableGame(int id){
+        getGame(id).disable();
+    }
+    
+    public void enableGame(int id){
+        getGame(id).enable();
+    }
+    
+    
     public ArrayList<Game> getGames(){
         return games;
     }
-=======
->>>>>>> 879e91097d00b53f529c2afc3532bd5f5d8e077a
-
     public GameMode getGameMode(int a){
         for(Game g: games){
             if(g.getID() == a){
@@ -100,8 +126,9 @@ public class GameManager {
         return null;
     }
 
+    //TODO: Actually make this countdown correctly
     public void startGame(int a){
-        getGame(a).startGame();
+        getGame(a).countdown(10);
     }
 
     public void addPlayer(Player p, int g){
@@ -129,13 +156,10 @@ public class GameManager {
         qg.get(0).addPlayer(pl);
 
     }
-<<<<<<< HEAD
 
     public WorldEditPlugin getWorldEdit(){
         return p.getWorldEdit();
     }
-=======
->>>>>>> 879e91097d00b53f529c2afc3532bd5f5d8e077a
 
     public void createArenaFromSelection(Player pl){
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
@@ -183,6 +207,10 @@ public class GameManager {
     private void hotAddArena(int no) {
         games.add(new Game(no));
         System.out.println("game added "+ games.size()+" "+SettingsManager.getInstance().getSystemConfig().getInt("gs-system.arenano"));
+    }
+    
+    public void gameEndCallBack(int id){
+        openedChest.put(id, new HashSet<Block>());
     }
 
 

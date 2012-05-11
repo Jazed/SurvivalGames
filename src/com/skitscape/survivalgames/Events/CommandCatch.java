@@ -1,6 +1,10 @@
 package com.skitscape.survivalgames.Events;
 
 
+import java.util.ArrayList;
+
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -14,11 +18,29 @@ public class CommandCatch implements Listener{
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDieEvent(PlayerCommandPreprocessEvent event) {
         String m = event.getMessage();
+
+        if(!GameManager.getInstance().isPlayerActive(event.getPlayer()) && !GameManager.getInstance().isPlayerInactive(event.getPlayer()))
+            return;
+        if(m.equalsIgnoreCase("/list")){
+            String act = ChatColor.AQUA+"[Active]";
+            String deact = ChatColor.RED +"[Inactive]";
+            for(Player p:GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(event.getPlayer())).getPlayers()[0]){
+                act += p.getName()+", ";
+            }
+            for(Player p:GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(event.getPlayer())).getPlayers()[1]){
+                deact += p.getName()+", ";
+            }
+
+            event.getPlayer().sendMessage(act);
+            event.getPlayer().sendMessage(deact);
+        }
+        if(!event.getPlayer().hasPermission("sg.arena.allow-commands") && !event.getPlayer().isOp()){
+            event.getPlayer().sendMessage(ChatColor.RED+"No Permission");
+            return;
+        }
         if(!SettingsManager.getInstance().getConfig().getBoolean("disallow-commands"))
             return;
-        if(!GameManager.getInstance().isPlayerActive(event.getPlayer()))
-            return;
-        else if(m.equalsIgnoreCase("/sg") || m.equalsIgnoreCase("/survivalgames")|| m.equalsIgnoreCase("/hg")||m.equalsIgnoreCase("/hungergames")){
+        else if(m.startsWith("/sg") || m.startsWith("/survivalgames")|| m.startsWith("/hg")||m.startsWith("/hungergames")){
             return;
         }
         event.setCancelled(true);

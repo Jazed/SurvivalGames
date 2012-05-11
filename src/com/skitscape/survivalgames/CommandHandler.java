@@ -16,10 +16,16 @@ import org.bukkit.plugin.Plugin;
 
 import com.skitscape.survivalgames.commands.AddPlayer;
 import com.skitscape.survivalgames.commands.CreateArena;
+import com.skitscape.survivalgames.commands.Disable;
+import com.skitscape.survivalgames.commands.Enable;
+import com.skitscape.survivalgames.commands.ForceStart;
 import com.skitscape.survivalgames.commands.GameCount;
 import com.skitscape.survivalgames.commands.Join;
+import com.skitscape.survivalgames.commands.Leave;
+import com.skitscape.survivalgames.commands.SetLobbySpawn;
 import com.skitscape.survivalgames.commands.SetLobbyWall;
 import com.skitscape.survivalgames.commands.SetSpawn;
+import com.skitscape.survivalgames.commands.Start;
 import com.skitscape.survivalgames.commands.SubCommand;
 
 public class CommandHandler implements CommandExecutor
@@ -43,6 +49,13 @@ public class CommandHandler implements CommandExecutor
         commands.put("setlobbywall", new SetLobbyWall());
         commands.put("setspawn", new SetSpawn());
         commands.put("getcount", new GameCount());
+        commands.put("disable", new Disable());
+        commands.put("forcestart", new ForceStart());
+        commands.put("enable", new Enable());
+        commands.put("start", new Start());
+        commands.put("leave", new Leave());
+        commands.put("setlobbyspawn", new SetLobbySpawn());
+
 
     }
 
@@ -54,6 +67,12 @@ public class CommandHandler implements CommandExecutor
             player = (Player) sender;
         }
 
+        if(SurvivalGames.dbcon == false){
+            player.sendMessage("Could not connect to the database. Plugin disabled");
+            return true;
+        }
+        
+        
         if(cmd.equalsIgnoreCase("survivalgames")){ 
             if(args == null || args[0] == null)
                 return false;
