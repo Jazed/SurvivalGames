@@ -21,6 +21,11 @@ public class SetLobbyWall implements SubCommand{
        return true;
     }
 
+    @Override
+    public String help(Player p) {
+        return "/sg setlobbywall - Setings the lobby stats wall";
+    }
+
     //TODO: TAKE A W.E SELECTIONA AND SET THE LOBBY. ALSO SET LOBBY WALL
     
     

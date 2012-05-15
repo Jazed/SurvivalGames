@@ -5,8 +5,10 @@ import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.skitscape.survivalgames.Game;
 import com.skitscape.survivalgames.GameManager;
@@ -20,12 +22,13 @@ public class PlaceEvent implements Listener {
 	   allowedPlace.addAll( SettingsManager.getInstance().getConfig().getIntegerList("block.place.whitelist"));
 	}
 	
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+	public void onBlockPlace(BlockPlaceEvent event) {
 	    Player p = event.getPlayer();
 	    int id  = GameManager.getInstance().getPlayerGameId(p);
 	    if(id == -1)return;
 	    Game g = GameManager.getInstance().getGame(id);
+	    if(g.isPlayerinactive(p))return;
 	    if(g.getMode() == Game.GameMode.DISABLED)return;
 	    if(g.getMode() != Game.GameMode.INGAME){event.setCancelled(true);return;}
 	    if(!allowedPlace.contains(event.getBlock().getTypeId()))event.setCancelled(true);

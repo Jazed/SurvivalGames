@@ -97,7 +97,6 @@ public class QueueManager {
                         s.setInt(9, b.getZ());
                         s.setLong(10, new Date().getTime());
                         s.execute();
-
                     }catch(Exception e){e.printStackTrace();}
                     // }
                     // try{sleep(sleep);}catch(Exception e){}
@@ -130,23 +129,28 @@ public class QueueManager {
                 taskid =   Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(p, this, 0, 1);
             }catch(Exception e){e.printStackTrace();}
         }
+        int rbblocks = 0;
+        int total = 0;
         public void run(){
             int i = 1;
             boolean done = false;
             try{
-                while(result.next() && i != 20 && !done){
+
+                while(result.next() && i != 50 && !done){
                     Location l = new Location(p.getServer().getWorld(result.getString(2)), result.getInt(7), result.getInt(8), result.getInt(9));
                     Block b = l.getBlock();
                     b.setTypeId(result.getInt(3));
                     b.setData(result.getByte(4));
                     b.getState().update();
                     i++;
+                    rbblocks++;
                 }
-                if(i<20){
+                if(i<100){
                     s.execute("DELETE FROM SurvivalGames WHERE gameid="+id);
                     r.rollbackFinishedCallback();
                     done = true;
                     Bukkit.getScheduler().cancelTask(taskid);
+                    System.out.println("Arena "+id+" reset. Rolled back "+rbblocks+" blocks");
                 }
             }catch(Exception e){e.printStackTrace();}
         }

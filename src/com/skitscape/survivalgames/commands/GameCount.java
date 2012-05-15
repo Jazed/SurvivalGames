@@ -11,5 +11,10 @@ public class GameCount implements SubCommand{
     
     return false;
 }
+    
+    @Override
+    public String help(Player p) {
+        return "/sg setlobbywall - Setings the lobby stats wall";
+    }
 
 }

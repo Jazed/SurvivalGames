@@ -48,6 +48,10 @@ public class SettingsManager {
             f2.createNewFile();
         }catch(Exception e){}
         reloadSystem();
+        saveSystemConfig();
+        reloadSystem();
+        reloadSpawns();
+        saveSpawns();
         reloadSpawns();
     }
 

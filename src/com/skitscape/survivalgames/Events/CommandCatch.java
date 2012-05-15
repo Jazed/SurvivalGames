@@ -34,10 +34,6 @@ public class CommandCatch implements Listener{
             event.getPlayer().sendMessage(act);
             event.getPlayer().sendMessage(deact);
         }
-        if(!event.getPlayer().hasPermission("sg.arena.allow-commands") && !event.getPlayer().isOp()){
-            event.getPlayer().sendMessage(ChatColor.RED+"No Permission");
-            return;
-        }
         if(!SettingsManager.getInstance().getConfig().getBoolean("disallow-commands"))
             return;
         else if(m.startsWith("/sg") || m.startsWith("/survivalgames")|| m.startsWith("/hg")||m.startsWith("/hungergames")){

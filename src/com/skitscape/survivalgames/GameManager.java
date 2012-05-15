@@ -63,7 +63,7 @@ public class GameManager {
 
     public int getPlayerGameId(Player p){
         for(Game g:games){
-            if(g.hasPlayer(p)){
+            if(g.isPlayerActive(p)){
                 return g.getID();
             }
         }
@@ -100,8 +100,7 @@ public class GameManager {
         return null;
     }
 
-    public void removePlayer(Player p){
-       
+    public void removePlayer(Player p){           
         getGame(getPlayerGameId(p)).removePlayer(p);
     }
     

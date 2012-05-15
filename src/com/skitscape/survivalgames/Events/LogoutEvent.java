@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.skitscape.survivalgames.Game;
 import com.skitscape.survivalgames.GameManager;
 
 public class LogoutEvent implements Listener{
@@ -15,7 +16,10 @@ public class LogoutEvent implements Listener{
         Player p = e.getPlayer();
         int id = GameManager.getInstance().getPlayerGameId(p);
         if(id == -1) return;
-        GameManager.getInstance().getGame(id).killPlayer(p);
+        if(GameManager.getInstance().getGameMode(id)==Game.GameMode.INGAME)
+            GameManager.getInstance().getGame(id).killPlayer(p);
+        else
+            GameManager.getInstance().getGame(id).removePlayer(p);
     }
     
 }

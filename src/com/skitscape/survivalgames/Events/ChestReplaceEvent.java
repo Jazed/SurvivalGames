@@ -3,6 +3,7 @@ package com.skitscape.survivalgames.Events;
 import java.util.HashSet;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -26,33 +27,39 @@ public class ChestReplaceEvent implements Listener{
         HashSet<Block>openedChest3 = new HashSet<Block>();
 
         if(!(e.getAction()==Action.RIGHT_CLICK_BLOCK)) return;
+        
         Block clickedBlock = e.getClickedBlock(); 
         int gameid = GameManager.getInstance().getBlockGameId(clickedBlock.getLocation());
         if(gameid == -1) return;
+
         if(GameManager.getInstance().getGame(gameid).getMode() != GameMode.INGAME)return;
-        openedChest3.addAll(GameManager.openedChest.get(gameid));
+
+        if(GameManager.getInstance().openedChest.get(gameid) !=null)openedChest3.addAll(GameManager.openedChest.get(gameid));
         if(openedChest3.contains(clickedBlock))return;
         Inventory inv;
         int size = 0;
         if (clickedBlock.getState() instanceof Chest) {
             size = 1;
             inv  = ((Chest) clickedBlock.getState()).getInventory();
+
         }
         else if(clickedBlock.getState() instanceof DoubleChest){
             size = 2;
             inv = ((DoubleChest) clickedBlock.getState()).getInventory();
+
         }
         else return;
 
-
         inv.clear();
         Random r = new Random();
-        for(ItemStack i: new ChestRatioStorage().getItems()){
+
+        for(ItemStack i: ChestRatioStorage.getInstance().getItems()){
             int l = r.nextInt(26 * size);
 
             while(inv.getItem(l) != null)
                 l = r.nextInt(26 * size);
             inv.setItem(l, i);
+
            
         }
         openedChest3.add(clickedBlock);

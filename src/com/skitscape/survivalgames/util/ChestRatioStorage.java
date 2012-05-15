@@ -1,100 +1,88 @@
 package com.skitscape.survivalgames.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+
+import com.skitscape.survivalgames.SurvivalGames;
 
 public class ChestRatioStorage {
 
-    //Seperate class so it can be easily added to a config file later
 
 
     HashMap<Integer, ArrayList<ItemStore>>lvlstore = new HashMap<Integer, ArrayList<ItemStore>>();
+    public static ChestRatioStorage instance = new ChestRatioStorage();
+    int ratio = 2;
 
-    ArrayList<ItemStore> lvl1 = new ArrayList<ItemStore>();
-    ArrayList<ItemStore> lvl2 = new ArrayList<ItemStore>();
-    ArrayList<ItemStore> lvl3 = new ArrayList<ItemStore>();
-    ArrayList<ItemStore> lvl4 = new ArrayList<ItemStore>();
-    ArrayList<ItemStore> lvl5 = new ArrayList<ItemStore>();
-
-
-    public ChestRatioStorage(){
-
-        lvl1.add(new ItemStore(268));
-        lvl1.add(new ItemStore(298));
-        lvl1.add(new ItemStore(299));
-        lvl1.add(new ItemStore(300));
-        lvl1.add(new ItemStore(301));
-        lvl1.add(new ItemStore(319, 3));
-        lvl1.add(new ItemStore(349, 3));
-        lvl1.add(new ItemStore(352, 3));
-        lvl1.add(new ItemStore(360, 4));
-        lvl1.add(new ItemStore(367, 4));
-        lvl2.add(new ItemStore(50, 5));
-
-        lvl2.add(new ItemStore(261));
-        lvl2.add(new ItemStore(268));
-        lvl2.add(new ItemStore(314));
-        lvl2.add(new ItemStore(315));
-        lvl2.add(new ItemStore(316));
-        lvl2.add(new ItemStore(317));
-        lvl2.add(new ItemStore(320, 3));
-        lvl2.add(new ItemStore(281, 4));
-        lvl2.add(new ItemStore(260, 2));
-        lvl2.add(new ItemStore(363, 4));
-        lvl2.add(new ItemStore(364, 2));
-        lvl2.add(new ItemStore(365, 4));
-        lvl2.add(new ItemStore(366, 2));
-        lvl2.add(new ItemStore(368, 3));
-        lvl2.add(new ItemStore(282, 2));
-
-        lvl3.add(new ItemStore(283));
-        lvl3.add(new ItemStore(103, 4));
-        lvl3.add(new ItemStore(306));
-        lvl3.add(new ItemStore(307));
-        lvl3.add(new ItemStore(308));
-        lvl3.add(new ItemStore(309));
-        lvl3.add(new ItemStore(302));
-        lvl3.add(new ItemStore(303));
-        lvl3.add(new ItemStore(305));
-        lvl3.add(new ItemStore(306));
-        lvl3.add(new ItemStore(322,2));
-        lvl3.add(new ItemStore(259));
-        lvl3.add(new ItemStore(327));
-        
-        lvl5.add(new ItemStore(276));
-        lvl5.add(new ItemStore(310));
-        lvl5.add(new ItemStore(311));
-        lvl5.add(new ItemStore(312));
-        lvl5.add(new ItemStore(313));
-        lvl5.add(new ItemStore(354, 2));
-
-
-
-
-        lvlstore.put(1, lvl1);
-        lvlstore.put(2, lvl2);
-        lvlstore.put(3, lvl3);
-        lvlstore.put(4, lvl4);
-        lvlstore.put(5, lvl5);
-
-
-
-
-
-
-
-
-
-
-
-
-
+    private ChestRatioStorage(){
 
     }
 
+    public void setup(){
+
+
+        File f = new File(SurvivalGames.getPluginDataFolder()+"/chest.yml");
+        if(!f.exists()){
+            try {f.createNewFile();
+            FileWriter out = new FileWriter(f);
+            InputStream is = getClass().getResourceAsStream("chest.yml");
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                out.write(line+"\n");
+                //System.out.println(line+"\n");
+            }
+            
+            
+            is.close();
+            isr.close();
+            br.close();
+            out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
+
+        for(int a = 1; a<5;a++){
+            ArrayList<ItemStore> lvl = new ArrayList<ItemStore>();
+            List<String>list = conf.getStringList("chest.lvl"+a);
+
+            for(int b = 0; b<list.size();b++){
+                String [] arg = list.get(b).split(",");
+
+                lvl.add(new ItemStore(Integer.parseInt(arg[0]), Integer.parseInt(arg[1])));
+
+            }
+
+            lvlstore.put(a, lvl);
+
+        }
+
+        ratio = conf.getInt("chest.ratio") + 1;
+        
+    }
+
+    public static ChestRatioStorage getInstance(){
+        return instance;
+    }
 
     class ItemStore{
 
@@ -145,7 +133,7 @@ public class ChestRatioStorage {
         for(int a = 0; a< r.nextInt(7)+5; a++){
             if(r.nextBoolean() == true){
                 int i = 1;
-                while(i<5 && r.nextBoolean() == true){
+                while(i<5 &&  r.nextInt(ratio) == 1){
                     i++;
                 }
 
@@ -173,6 +161,7 @@ public class ChestRatioStorage {
 
 
     }
+
 
 
 

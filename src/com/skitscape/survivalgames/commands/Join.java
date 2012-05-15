@@ -15,5 +15,9 @@ public class Join implements SubCommand{
 
     }
 
+    @Override
+    public String help(Player p) {
+        return "/sg setlobbywall - Setings the lobby stats wall";
+    }
 }
 

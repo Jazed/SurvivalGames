@@ -14,8 +14,11 @@ public class Disable implements SubCommand{
             return true;
         }
         GameManager.getInstance().disableGame(Integer.parseInt(args[0]));
-        player.sendMessage(ChatColor.GREEN+"Game "+args[0]+" disabled");
+        player.sendMessage(ChatColor.GREEN+"Arena "+args[0]+" disabled");
         return false;
     }
-
+    @Override
+    public String help(Player p) {
+        return "/sg disable <id> - Disabled arena <id>";
+    }
 }

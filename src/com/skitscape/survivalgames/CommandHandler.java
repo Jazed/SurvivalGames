@@ -8,11 +8,13 @@ import java.util.Vector;
 
 
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 import com.skitscape.survivalgames.commands.AddPlayer;
 import com.skitscape.survivalgames.commands.CreateArena;
@@ -43,16 +45,15 @@ public class CommandHandler implements CommandExecutor
     private void loadCommands()
     {
         commands.put("createarena", new CreateArena());
-        commands.put("addplayer", new AddPlayer());
-        // commands.put("leave", new Leave());
-        commands.put("join", new Join());
+       // commands.put("addplayer", new AddPlayer());
+      //  commands.put("join", new Join());
         commands.put("setlobbywall", new SetLobbyWall());
         commands.put("setspawn", new SetSpawn());
-        commands.put("getcount", new GameCount());
+      //  commands.put("getcount", new GameCount());
         commands.put("disable", new Disable());
-        commands.put("forcestart", new ForceStart());
+        commands.put("start", new ForceStart());
         commands.put("enable", new Enable());
-        commands.put("start", new Start());
+        commands.put("vote", new Start());
         commands.put("leave", new Leave());
         commands.put("setlobbyspawn", new SetLobbySpawn());
 
@@ -62,6 +63,8 @@ public class CommandHandler implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command cmd1, String commandLabel, String[] args){
         String cmd = cmd1.getName();
+        PluginDescriptionFile pdfFile = plugin.getDescription();
+
         Player player = null;
         if (sender instanceof Player) {
             player = (Player) sender;
@@ -74,19 +77,35 @@ public class CommandHandler implements CommandExecutor
         
         
         if(cmd.equalsIgnoreCase("survivalgames")){ 
-            if(args == null || args[0] == null)
-                return false;
+            if(args == null || args.length < 1){
+                player.sendMessage(ChatColor.GOLD +""+ ChatColor.BOLD +"Survival Games "+ChatColor.RESET+  ChatColor.YELLOW +" Version: "+ pdfFile.getVersion() );
+                player.sendMessage(ChatColor.GOLD +"Type /sg help for help" );
+
+                return true;
+            }
+            if(args[0].equalsIgnoreCase("help")){
+                help(player);
+                return true;
+            }
             String sub = args[0];
 
             Vector<String> l  = new Vector<String>();
             l.addAll(Arrays.asList(args));
             l.remove(0);
             args = (String[]) l.toArray(new String[0]);
-            commands.get(sub).onCommand(
-                    player, 
-                    args);
+            try{
+            commands.get(sub).onCommand( player,  args);
+            }catch(Exception e){player.sendMessage(ChatColor.RED+"An error occured while executing the command. Check the      console");                player.sendMessage(ChatColor.BLUE +"Type /sg help for help" );
+}
             return true;
         }
         return false;
+    }
+    
+    public void help(Player p){
+        p.sendMessage("/sg <command> <args>");
+        for(SubCommand v: commands.values()){
+            p.sendMessage(ChatColor.AQUA +v.help(p));
+        }
     }
 }

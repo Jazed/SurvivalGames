@@ -29,18 +29,23 @@ public class FileCache {
     }
 
     public static void loadPage(String pagename, boolean template){
-        Scanner scan = null;
-        try{
-            scan = new Scanner(new File(SurvivalGames.getPluginDataFolder()+((template)?"\\template.html": "\\pages\\"+pagename)));
-        }catch(Exception e){System.out.println("Survival Games webstats - Could not load page: " + pagename);
-            String data = "";
         
-        if(scan == null)
+        Scanner scan = null;          
+        File f = new File(SurvivalGames.getPluginDataFolder()+((template)?"/www/template.html": "/www/pages/"+pagename+".html"));
+
+        try{
+            scan = new Scanner(f);
+        }catch(Exception e){System.out.println("Survival Games webstats - Could not load page: " + pagename +"    "+f.getAbsolutePath());}
+        String data = "";
+
+        if(scan == null){
+            html.put(pagename, "404 - Not found");
             return;
+        }
         while(scan.hasNext()){
             data = data + scan.nextLine();
         }
         html.put(pagename, data);
-        }
     }
 }
+

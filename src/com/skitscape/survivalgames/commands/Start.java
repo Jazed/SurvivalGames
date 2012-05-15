@@ -14,16 +14,22 @@ import com.skitscape.survivalgames.GameStatus;
 public class Start implements SubCommand {
     
     public boolean onCommand(Player player, String[] args) {
+        if(!player.hasPermission("sg.arena.vote"))return false;
         int game  = GameManager.getInstance().getPlayerGameId(player);
         if(game == -1){
             player.sendMessage(ChatColor.RED+"Must be in a game!");
             return true;
         }
         
-        GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).vote();
+        GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).vote(player);
         player.sendMessage(ChatColor.GREEN+"Voted to start the game!");
 
         return true;
+    }
+    
+    @Override
+    public String help(Player p) {
+        return "/sg start - Votes to start the game";
     }
 
 

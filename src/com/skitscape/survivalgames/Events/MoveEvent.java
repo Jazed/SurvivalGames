@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
 import com.skitscape.survivalgames.Game;
+import com.skitscape.survivalgames.Game.GameMode;
 import com.skitscape.survivalgames.GameManager;
 import com.skitscape.survivalgames.SettingsManager;
 import com.skitscape.survivalgames.SurvivalGames;
@@ -25,7 +26,7 @@ public class MoveEvent implements Listener{
          * if(SettingsManager.getGameWorld() == null)
             return;
         if(e.getPlayer().getWorld()!=SettingsManager.getGameWorld())
-            return;*/
+            return;*//*
         if(!GameManager.getInstance().isPlayerActive(e.getPlayer()))
             return;
         int id = GameManager.getInstance().getPlayerGameId(e.getPlayer());
@@ -52,7 +53,7 @@ public class MoveEvent implements Listener{
             //l.setYaw(e.getPlayer().getLocation().getYaw());
             //l.setPitch(e.getPlayer().getLocation().getPitch());
             e.getPlayer().teleport(l);
-        }
+        }*/
     }
 
 
@@ -71,7 +72,8 @@ public class MoveEvent implements Listener{
         }
         if(GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(e.getPlayer())).getMode() == Game.GameMode.INGAME)
             return;
-        if(GameManager.getInstance().isPlayerActive(e.getPlayer()) && GameManager.getInstance().getGameMode(GameManager.getInstance().getPlayerGameId(e.getPlayer())) != Game.GameMode.INGAME){
+        GameMode mo3 = GameManager.getInstance().getGameMode(GameManager.getInstance().getPlayerGameId(e.getPlayer()));
+        if(GameManager.getInstance().isPlayerActive(e.getPlayer()) && mo3 != Game.GameMode.INGAME){
             if(playerpos.get(e.getPlayer()) == null){
                 playerpos.put(e.getPlayer(), e.getPlayer().getLocation().toVector());
                 return;

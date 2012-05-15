@@ -61,4 +61,9 @@ public class SetSpawn implements SubCommand{
 
         return true;
     }
+    
+    @Override
+    public String help(Player p) {
+        return "/sg setspawn next- Sets a spawn in the arena you are located in.";
+    }
 }

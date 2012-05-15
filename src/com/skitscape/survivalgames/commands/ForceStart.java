@@ -14,6 +14,11 @@ import com.skitscape.survivalgames.GameStatus;
 public class ForceStart implements SubCommand {
 	
     public boolean onCommand(Player player, String[] args) {
+        
+        if(!player.hasPermission("sg.arena.forcestart") && !player.isOp()){
+            player.sendMessage(ChatColor.RED+ "No Permission");
+            return true;
+        }
         int game  = GameManager.getInstance().getPlayerGameId(player);
         if(game == -1){
             player.sendMessage(ChatColor.RED+"Must be in a game!");
@@ -27,6 +32,11 @@ public class ForceStart implements SubCommand {
 		
 		return true;
 	}
+    
+    @Override
+    public String help(Player p) {
+        return "/sg forcestart - Force starts a game";
+    }
 
 
 }

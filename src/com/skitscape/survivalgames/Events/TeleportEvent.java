@@ -1,5 +1,6 @@
 package com.skitscape.survivalgames.Events;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,7 +16,7 @@ public class TeleportEvent implements Listener{
         int id = GameManager.getInstance().getPlayerGameId(p);
         if(id == -1) return;
         if(GameManager.getInstance().getGame(id).isPlayerActive(p) && event.getCause() == PlayerTeleportEvent.TeleportCause.COMMAND){
-            p.sendMessage("ChatColor.RED Cannot teleport while ingame!");
+            p.sendMessage(ChatColor.RED +" Cannot teleport while ingame!");
             event.setCancelled(true);
         }
     }

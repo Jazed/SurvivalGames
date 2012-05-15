@@ -21,5 +21,9 @@ public class CreateArena implements SubCommand{
         return true;
     }
 
+    @Override
+    public String help(Player p) {
+        return "/sg createarena - Creates a new arena in the current world edit selection";
+    }
 
 }

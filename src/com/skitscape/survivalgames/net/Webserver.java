@@ -19,6 +19,7 @@ public class Webserver extends Thread {
                 // Spin off request to a new thread to be handled
                 Connection c = new Connection(skt);
                 c.start();
+               // st.close();
             }
         }catch (Exception e) {
 

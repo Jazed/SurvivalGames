@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.skitscape.survivalgames.Game;
 import com.skitscape.survivalgames.GameManager;
@@ -34,14 +35,23 @@ public class DeathEvent implements Listener {
 		int gameid = GameManager.getInstance().getPlayerGameId(player);
 		if(gameid==-1)
 		    return;
+        if(!GameManager.getInstance().isPlayerActive(player))
+            return;
 		Game game = GameManager.getInstance().getGame(gameid);
 		if(game.getMode() != Game.GameMode.INGAME){
 		    event.setCancelled(true);
 		    return;
 		}
+		if(game.isProtectionOn()){
+		    event.setCancelled(true);
+		    return;
+		}
 		if(player.getHealth() <= event.getDamage()){
+		    event.setCancelled(true);
 		    player.setHealth(20);
-		    Inventory inv = player.getInventory();
+		    player.setFoodLevel(20);
+		    player.setFireTicks(0);
+		    PlayerInventory inv = player.getInventory();
 		    Location l = player.getLocation();
             player.teleport(SettingsManager.getInstance().getLobbySpawn());
 
@@ -49,6 +59,10 @@ public class DeathEvent implements Listener {
 		        if(i!=null)
 		            l.getWorld().dropItemNaturally(l, i);
 		    }
+	          for(ItemStack i: inv.getArmorContents()){
+	                if(i!=null && i.getTypeId() !=0)
+	                    l.getWorld().dropItemNaturally(l, i);
+	            }
 		    
 		      GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).killPlayer(player);
 

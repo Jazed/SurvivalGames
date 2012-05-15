@@ -1,6 +1,7 @@
 package com.skitscape.survivalgames;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -30,6 +31,7 @@ public class Game {
 
     private Arena arena;
     private int gameID;
+    private int gcount = 0;
     private FileConfiguration c;
     private FileConfiguration s;
     private HashMap<Integer, Player>spawns = new HashMap<Integer, Player>();
@@ -39,6 +41,7 @@ public class Game {
     private boolean disabled = false;
 
 
+    private long startTime = 0;
 
     public Game(int gameid){
         gameID = gameid;
@@ -53,14 +56,14 @@ public class Game {
         mode = GameMode.LOADING;
 
 
-        int x = s.getInt("sg-system.arenas."+gameID+".x1");
-        int y = s.getInt("sg-system.arenas."+gameID+".y1");
-        int z = s.getInt("sg-system.arenas."+gameID+".z1");
+        int x      = s.getInt("sg-system.arenas."+gameID+".x1");
+        int y      = s.getInt("sg-system.arenas."+gameID+".y1");
+        int z      = s.getInt("sg-system.arenas."+gameID+".z1");
         System.out.println(x+ " "+ y +" "+z);
         int x1     = s.getInt("sg-system.arenas."+gameID+".x2");
         int y1     = s.getInt("sg-system.arenas."+gameID+".y2");
-        int z1   = s.getInt("sg-system.arenas."+gameID+".z2");
-        System.out.println(x+ " "+ y +" "+z);
+        int z1     = s.getInt("sg-system.arenas."+gameID+".z2");
+        System.out.println(x1+ " "+ y1 +" "+z1);
         Location max = new Location(SettingsManager.getGameWorld(gameID),Math.max(x, x1),Math.max(y, y1),Math.max(z, z1));
         Location min = new Location(SettingsManager.getGameWorld(gameID),Math.min(x, x1),Math.min(y, y1),Math.min(z, z1));
 
@@ -112,6 +115,7 @@ public class Game {
 
     public void resetArena(){
         vote = 0;
+        voted.clear();
         mode = GameMode.RESETING;
         GameManager.getInstance().gameEndCallBack(gameID);
         GameReset r = new GameReset(this);
@@ -144,7 +148,6 @@ public class Game {
             if(activePlayers.size() < SettingsManager.getInstance().getSpawnCount(gameID)){
                 p.sendMessage("Joining Arena " + gameID);
                 boolean placed = false;
-                System.out.println(spawns);
 
                 for(int a = 1; a<=SettingsManager.getInstance().getSpawnCount(gameID); a++){
                     System.out.println(spawns.get(a) == null);
@@ -178,12 +181,24 @@ public class Game {
                 countdown(c.getInt("auto-start-time"));
             return true;
         }
-        p.sendMessage(ChatColor.RED+"Game already started!");
+        if(mode == GameMode.INGAME)
+            p.sendMessage(ChatColor.RED+"Game already started!");
+        else if(mode == GameMode.DISABLED)
+            p.sendMessage(ChatColor.RED+"Arena disabled!");
+        else if(mode == GameMode.RESETING)
+            p.sendMessage(ChatColor.RED+"The arena is resting!");
+        else
+            p.sendMessage(ChatColor.RED+"Cannot join the game!");
+
         return false;
     }
 
     public int getActivePlayers(){
         return activePlayers.size();
+    }
+
+    public int getInactivePlayers(){
+        return inactivePlayers.size();
     }
 
     public Player[][] getPlayers(){
@@ -197,14 +212,21 @@ public class Game {
         return all;
     }
     public void removePlayer(Player p){
-        restoreInv(p);
-        activePlayers.remove(p);
-        inactivePlayers.remove(p);
-        p.teleport(SettingsManager.getInstance().getLobbySpawn());
-        for(Object in: spawns.keySet().toArray()){
-            if(spawns.get(in) == p)spawns.remove(in);
+        if(mode == GameMode.INGAME){
+            killPlayer(p);
+            p.teleport(SettingsManager.getInstance().getLobbySpawn());
+
         }
-        LobbyManager.getInstance().clearSigns();
+        else{
+            restoreInv(p);
+            activePlayers.remove(p);
+            inactivePlayers.remove(p);
+            p.teleport(SettingsManager.getInstance().getLobbySpawn());
+            for(Object in: spawns.keySet().toArray()){
+                if(spawns.get(in) == p)spawns.remove(in);
+            }
+            LobbyManager.getInstance().clearSigns();
+        }
     }
 
     public int getID() {
@@ -221,12 +243,21 @@ public class Game {
 
         activePlayers.remove(p);
         inactivePlayers.add(p);
-
-        for(Player pl: getAllPlayers()){
-            pl.sendMessage(ChatColor.YELLOW+"Player "+p.getName()+" died. There are now "+getActivePlayers()+" players remaining!");
+        if(mode != GameMode.WAITING && getActivePlayers() >1){
+            for(Player pl: getAllPlayers()){
+                pl.sendMessage(ChatColor.YELLOW+"Player "+p.getName()+" died. There are now "+getActivePlayers()+" players remaining!");
+            }
         }
 
-        if(activePlayers.size() == 1){
+        for(Player pe: activePlayers){
+            Location l = pe.getLocation();
+            l.setY(l.getWorld().getMaxHeight());
+            l.getWorld().strikeLightningEffect(l);
+        }
+
+
+
+        if(activePlayers.size() == 1 && mode != GameMode.WAITING){
             playerWin(p);
             endGame();
         }
@@ -251,6 +282,15 @@ public class Game {
         return arena.containsBlock(v);
     }
 
+    public boolean isProtectionOn(){
+        long t = startTime / 1000;
+        long l = SettingsManager.getInstance().getConfig().getLong("damage-time-limit");
+        long d = new Date().getTime() /1000;
+
+        if((d - t) < l)return true;
+        return false;
+
+    }
 
     public void endGame(){
         mode = GameMode.WAITING;
@@ -259,10 +299,20 @@ public class Game {
 
     }
 
-    public void vote(){
+    ArrayList<Player>voted = new ArrayList<Player>();
+    public void vote(Player pl){
         if(GameMode.STARTING == mode)return;
+        if(voted.contains(pl)){
+            pl.sendMessage(ChatColor.RED+"You already voted!");
+            return;
+        }
         vote++;
-        if(((vote +0.0) / (SettingsManager.getInstance().getSpawnCount(gameID) +0.0))>c.getInt("auto-start-vote")/100 && getActivePlayers()>2){
+        voted.add(pl);
+        for(Player p: activePlayers){
+            p.sendMessage(ChatColor.AQUA+pl.getName()+" Voted to start the game!");
+        }
+        // Bukkit.getServer().broadcastMessage((vote +0.0) / (getActivePlayers() +0.0) +"% voted, needs "+(c.getInt("auto-start-vote")+0.0)/100);
+        if(((vote +0.0) / (getActivePlayers() +0.0))>(c.getInt("auto-start-vote")+0.0)/100 && getActivePlayers()>2){
             countdown(c.getInt("auto-start-time"));
             for(Player p: activePlayers){
                 p.sendMessage("Game Starting in "+c.getInt("auto-start-time"));
@@ -311,17 +361,41 @@ public class Game {
     }
 
     public void startGame(){
-        for(Player pl: activePlayers){
-            pl.sendMessage(ChatColor.AQUA+"Good Luck!");
+        if(activePlayers.size() <= 1){
+            for(Player pl: activePlayers){
+                pl.sendMessage(ChatColor.RED+"Not Enought Players!");
+            }
+            return;
         }
-        mode = GameMode.INGAME;
+        else{
+            startTime = new Date().getTime();
+            for(Player pl: activePlayers){
+                pl.sendMessage(ChatColor.AQUA+"Good Luck!");
+            }
+            if(SettingsManager.getInstance().getConfig().getBoolean("restock-chest")){
+                SettingsManager.getGameWorld(gameID).setTime(0);
+                gcount++;
+                new NightChecker().start();
+            }
+
+            mode = GameMode.INGAME;
+        }
 
     }
+
+    public int getCountdownTime(){
+        return counttime;
+    }
+    int counttime = 0;
+    int threadsync = 0;
+
     public void countdown(int time){
+        threadsync++;
         mode = GameMode.STARTING;
+        counttime = time;
         if(time<11){
             for(Player p: activePlayers){
-                p.sendMessage("Game Starting in "+time);
+                p.sendMessage(ChatColor.DARK_BLUE+"Game Starting in "+time);
             }
         }
         if(SurvivalGames.isActive() && time > 0){
@@ -337,15 +411,37 @@ public class Game {
     class CountdownThread extends Thread{
 
         int time;
+        int trun = threadsync;
         public CountdownThread(int t){
             this.time = t;
         }
         public void run() {
             time--;
             try{Thread.sleep(1000);}catch(Exception e){}
-            countdown(time);
+            if(trun == threadsync)
+                countdown(time);
 
         }
+
+    }
+
+    class NightChecker extends Thread{
+        boolean reset = false;
+        int tgc = gcount;
+        public void run(){
+            while(!reset && mode == GameMode.INGAME && tgc == gcount){
+                try{Thread.sleep(5000);}catch(Exception e){}
+                if(SettingsManager.getGameWorld(gameID).getTime()>14000){
+                    for(Player pl:activePlayers){
+                        pl.sendMessage(ChatColor.AQUA+"Chest have been restocked!");
+                    }
+                    GameManager.openedChest.get(gameID).clear();
+                    reset = true;
+                }
+
+            }
+        }
+
 
     }
 

@@ -44,8 +44,8 @@ public class LobbyManager  implements Listener{
 
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
         try{
-        if(!c.getBoolean("sg-system.lobby.sign.set"))
-            return;
+            if(!c.getBoolean("sg-system.lobby.sign.set"))
+                return;
         }catch(Exception e){return;}
         boolean usingx = false;
         int hdiff = 0;
@@ -57,9 +57,9 @@ public class LobbyManager  implements Listener{
         int z2 = c.getInt("sg-system.lobby.sign.z2");
         int inc = 0;
         Location l;
-      //  System.out.println(x1+"  "+y1+"  "+z1);
+        //  System.out.println(x1+"  "+y1+"  "+z1);
         byte temp = ((Sign)new Location(p.getServer().getWorld(c.getString("sg-system.lobby.sign.world")),x1,y1,z1).getBlock().getState()).getData().getData();
-      //  System.out.println("facing "+temp);
+        //  System.out.println("facing "+temp);
         if(temp == 3 || temp == 4){
             l = new Location(Bukkit.getWorld(c.getString("sg-system.lobby.sign.world")),x1,y1,z1);
             inc = -1;
@@ -84,7 +84,7 @@ public class LobbyManager  implements Listener{
         for(int y = vdiff-1; y>=0; y--){
             for(int x = hdiff-1; x>=0;x--){
 
-                
+
                 BlockState b =   p.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("sg-system.lobby.sign.world")).getBlockAt(l).getState();
                 if(b instanceof Sign){
                     signs[y][x] = (Sign)b;
@@ -97,8 +97,8 @@ public class LobbyManager  implements Listener{
             }
             l = l.add(0, -1, 0);
             if(inc == -1){
-            l.setX(x1);
-            l.setZ(z1);
+                l.setX(x1);
+                l.setZ(z1);
             }
             else{
                 l.setX(x2);
@@ -107,7 +107,7 @@ public class LobbyManager  implements Listener{
         }
         runningThread ++;
         showMessage(new String[]{"", "Survival Games","","","Double0negative                    Beechboy200" ,"skitscape.com", "voidmc.com"});
-       // try{Thread.sleep(4000);}catch(Exception e){}
+        // try{Thread.sleep(4000);}catch(Exception e){}
     }
 
     public int[] getSignMidPoint(){
@@ -160,27 +160,28 @@ public class LobbyManager  implements Listener{
     ArrayList<String[]>messagequeue = new ArrayList<String[]>(3);
 
     public void showMessage(String[] msg9){
-        runningThread++;
         new ThreadMessageDisplay(msg9).start();
     }
-    
+
     class ThreadMessageDisplay extends Thread{
         String [] message;
-        
+
         ThreadMessageDisplay(String[] msg){
             message = msg;
         }
-        
+
         public void run(){
             signShowMessage(message);
         }
     }
-    
+
     public void signShowMessage(String[] msg){
-        signShowMessage(msg, 4000);
+        signShowMessage(msg, 7000);
     }
-    
+
     public void signShowMessage(String[] msg9, long wait){
+        runningThread++;
+
         messagequeue.add(msg9);
         if(showingMessage)
             return;
@@ -231,7 +232,7 @@ public class LobbyManager  implements Listener{
             for(int a = msg.length-1; a>-1;a--){
                 int y = getSignMidPoint()[0] - (msg[a].length() / 2);
 
-               // System.out.println(msg[a]);
+                // System.out.println(msg[a]);
                 char[] line =  msg[a].toCharArray();
                 for(int b = 0;b<line.length;b++){
 
@@ -275,7 +276,7 @@ public class LobbyManager  implements Listener{
 
 
     public void updateGameStatus(){
-       // clearSigns();
+        // clearSigns();
         int b = signs.length-1;
         if(!SurvivalGames.dbcon){
             signs[b][0].setLine(0, ChatColor.RED+"No Database");
@@ -293,35 +294,43 @@ public class LobbyManager  implements Listener{
             signs[b][0].setLine(2, "Arena "+a);
             signs[b][1].setLine(0, "Arena "+a);
             signs[b][1].setLine(1, GameManager.getInstance().getGameMode(a)+"");
-            signs[b][1].setLine(2, GameManager.getInstance().getGame(a).getActivePlayers()+"/"+SettingsManager.getInstance().getSpawnCount(a));
-
+            signs[b][1].setLine(2, GameManager.getInstance().getGame(a).getActivePlayers()+"/"+ChatColor.GRAY+GameManager.getInstance().getGame(a).getInactivePlayers()+ChatColor.BLACK+"/"+SettingsManager.getInstance().getSpawnCount(a));
+            if(GameManager.getInstance().getGameMode(a) == Game.GameMode.STARTING)
+                signs[b][1].setLine(3, GameManager.getInstance().getGame(a).getCountdownTime()+"");
+            else
+                signs[b][1].setLine(3,"");
             signs[b][0].update();
             signs[b][1].update();
-            
+
             int signno = 2;
             int line = 0;
             Player[] active = GameManager.getInstance().getGame(a).getPlayers()[0];
             Player[] inactive = GameManager.getInstance().getGame(a).getPlayers()[1];
             for(Player p:active){
-                signs[b][signno].setLine(line, p.getName());
-                signs[b][signno].update();
+                if(signno<signs[b].length){
 
-                line++;
-                if(line == 4){
-                    line = 0;
-                    signno++;
+                    signs[b][signno].setLine(line, p.getName());
+                    signs[b][signno].update();
+
+                    line++;
+                    if(line == 4){
+                        line = 0;
+                        signno++;
+                    }
                 }
             }
             for(Player p:inactive){
-                signs[b][signno].setLine(line, ChatColor.GRAY +p.getName());
-                signs[b][signno].update();
-                line++;
-                if(line == 4){
-                    line = 0;
-                    signno++;
-                    
+                if(signno<signs[b].length){
+                    signs[b][signno].setLine(line, ChatColor.GRAY +p.getName());
+                    signs[b][signno].update();
+                    line++;
+                    if(line == 4){
+                        line = 0;
+                        signno++;
+
+                    }
                 }
-                
+
             }
 
             b--;

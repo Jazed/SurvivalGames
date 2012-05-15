@@ -15,6 +15,7 @@ import com.skitscape.survivalgames.logging.DatabaseManager;
 import com.skitscape.survivalgames.logging.LoggingManager;
 import com.skitscape.survivalgames.logging.QueueManager;
 import com.skitscape.survivalgames.net.Webserver;
+import com.skitscape.survivalgames.util.ChestRatioStorage;
 
 
 public class SurvivalGames extends JavaPlugin {
@@ -26,7 +27,6 @@ public class SurvivalGames extends JavaPlugin {
     public void onDisable() {
         active = false;
         PluginDescriptionFile pdfFile = this.getDescription();
-        GameStatus.gameRunning = false;
         SettingsManager.getInstance().saveSpawns();
         SettingsManager.getInstance().saveSystemConfig();
         this.logger.info("The" + pdfFile.getName() + "version" + pdfFile.getVersion() + "has now been disabled and reset");
@@ -35,18 +35,19 @@ public class SurvivalGames extends JavaPlugin {
     public void onEnable() {
         logger = this.getLogger();
         active = true;
+        datafolder = this.getDataFolder();
         PluginManager pm = getServer().getPluginManager();
         setCommands();
 
 
         SettingsManager.getInstance().setup(this);
+
         try{
             DatabaseManager.getInstance().setup(this);
             QueueManager.getInstance().setup(this);
             dbcon = true;
         }
         catch(Exception e){
-            e.printStackTrace();
             dbcon = false;
             logger.severe("!!!Failed to connect to the database. Please check the settings and try again!!!");
             return;
@@ -55,7 +56,8 @@ public class SurvivalGames extends JavaPlugin {
             LobbyManager.getInstance().setup(this);
 
         }
-        
+        ChestRatioStorage.getInstance().setup();
+
         
         pm.registerEvents(new PlaceEvent(), this);
         pm.registerEvents(new BreakEvent(), this);
@@ -71,7 +73,7 @@ public class SurvivalGames extends JavaPlugin {
 
 
 
-        new Webserver().start();
+      //  new Webserver().start();
         
 
         GameManager.getInstance().setup(this);

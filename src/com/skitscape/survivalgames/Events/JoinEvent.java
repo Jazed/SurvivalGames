@@ -11,7 +11,7 @@ public class JoinEvent implements Listener {
     @EventHandler
     public void PlayerJoin(PlayerJoinEvent e){
         Player p = e.getPlayer();
-        if(GameManager.getInstance().getPlayerGameId(p) != -1){
+        if(GameManager.getInstance().getBlockGameId(p.getLocation()) != -1){
             p.teleport(SettingsManager.getInstance().getLobbySpawn());
         }
     }

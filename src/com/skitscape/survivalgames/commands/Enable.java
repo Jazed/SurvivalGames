@@ -14,9 +14,13 @@ public class Enable implements SubCommand{
                 return true;
             }
             GameManager.getInstance().enableGame(Integer.parseInt(args[0]));
-
+            player.sendMessage(ChatColor.GREEN+"Arena "+ args[0]+ " Enabled");
             return false;
         }
 
+        @Override
+        public String help(Player p) {
+            return "/sg enable <id> - enables a the arena <id>";
+        }
     }
 
