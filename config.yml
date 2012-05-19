@@ -4,21 +4,21 @@
 #                Developed by                  #
 #    Beechboy200, Double0negative, Chaseos     #
 #                                              #
-#             Version: alpha 0.0.1             #
 #                                              #
-#              Skitscape.net                   #
+#               Skitscape.com                  #
+#                 voidmc.com                   #
 ################################################
 
 
 #set how many players are needed for the game
 #to auto-start. Once the player limit is reached
 #it will wait for x amount of seconds for 
-#additional players
-auto-start-limit: 24
-auto-start-time: 60
-
-#set the max number of Simultaneous Games
-max-games: 2
+#additional players. Auto start vote means that
+#x percent of players need to vote with /sg start
+#for the game to begin
+auto-start-players: 20
+auto-start-time: 20
+auto-start-vote: 75
 
 #if set to true, commands not associated with
 #the survival games will not be allowed to 
@@ -28,7 +28,40 @@ disallow-commands: true
 #set how long each player should
 #be invincible for after the start of 
 #the game in seconds
-damage-time-limit: 60
+grace-period: 60
+
+#Sets if chest should be restocked on the first 
+#night. If set to true this will also have the side
+#effect of setting the world time to Day at the start
+#of the game. This is only temporary until per-arena time
+#has been implemented
+restock-chest: true
+
+
+
+block:
+  place:
+    whitelist:
+    - 18
+    - 105
+    - 31
+    - 37
+    - 38
+    - 50
+    - 103
+    - 43
+  break:
+    whitelist:
+    - 18
+    - 105
+    - 31
+    - 37
+    - 38
+    - 50
+    - 103
+    - 43
+
+
 
 #if mob-progression is enabled, then the 
 #difficulty of mobs and amount of mobs
@@ -43,6 +76,7 @@ mob-progression:
   ratio: 2
   mob-blacklist:
   - slime
+  
 #if set to true, the arena will be logged
 #and auto rolled back and the end of the 
 #game
@@ -55,14 +89,12 @@ logging:
 #when the player limit is reached, a chest
 #will be placed inside the radius of every 
 #remain player contianing random items for 
-<<<<<<< HEAD
 #that player. If fire-lighting is enabled
 #the a lighting strike will be fired at the
 #location of each player every x seconds to
 #notify the other players of their location
-=======
-#that player
->>>>>>> 0fbcc28d77fcfe110e112c66900a2f5e1ebcd5f9
+
+#Note: chest placing not implemented
 endgame:
   players: 3
   place-chest:
@@ -70,7 +102,7 @@ endgame:
     radius: 10
   fire-lighting:
     enabled: true
-    time: 20
+    interval: 20
 
 #settings for connecting to the 
 #sql server. These settings will
@@ -82,7 +114,7 @@ sql:
   port: 3306
   user: 'root'
   pass: ''
-  database:
+  database: 'survivalgames'
 
 #Settings for the webstats. If enabled, stats 
 #such as k/d record, wins, win streaks, kill

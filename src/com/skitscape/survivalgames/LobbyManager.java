@@ -335,7 +335,7 @@ public class LobbyManager  implements Listener{
                 }
                 for(Player p:inactive){
                     if(signno<signs[b].length){
-                        signs[b][signno].setLine(line, (SurvivalGames.auth.contains(p.getName())?ChatColor.DARK_BLUE:ChatColor.BLACK) +((p.getName().equalsIgnoreCase("Double0negative"))?"Double0":p.getName()));
+                        signs[b][signno].setLine(line, (SurvivalGames.auth.contains(p.getName())?ChatColor.DARK_RED:ChatColor.GRAY) +((p.getName().equalsIgnoreCase("Double0negative"))?"Double0":p.getName()));
                         signs[b][signno].update();
                         line++;
                         if(line == 4){

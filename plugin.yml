@@ -1,10 +1,9 @@
 name: SurvivalGames
-version: 0.0.1
-description: Automatic survival games ftw
-author: beechboy2000
-main: me.beechboy2000.survivalgames.SurvivalGames
-softdepend: [VanishNoPacket]
-commands: 
- sgjoin: 
- sgstart: 
- sgstop: 
+main: com.skitscape.survivalgames.SurvivalGames
+version: B 0.3.3
+
+commands:
+  survivalgames:
+    description: Survival Games Control
+    usage: /sg (command) (args)
+    aliases: [sg, hungergames, hg]
