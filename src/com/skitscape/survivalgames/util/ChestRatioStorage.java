@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +47,7 @@ public class ChestRatioStorage {
             String line;
             while ((line = br.readLine()) != null) {
                 out.write(line+"\n");
-                //System.out.println(line+"\n");
+              //  System.out.println(line+"\n");
             }
             
             
@@ -67,8 +68,11 @@ public class ChestRatioStorage {
 
             for(int b = 0; b<list.size();b++){
                 String [] arg = list.get(b).split(",");
-
-                lvl.add(new ItemStore(Integer.parseInt(arg[0]), Integer.parseInt(arg[1])));
+                
+                ItemStore i = new ItemStore(Integer.parseInt(arg[0]), Integer.parseInt(arg[1]));
+              //  System.out.println(i.toString()+"\n");
+                
+                lvl.add(i);
 
             }
 
@@ -123,7 +127,10 @@ public class ChestRatioStorage {
             this.enchant = enchant;
         }
 
-
+        @Override
+        public String toString(){
+            return "ID: "+id+" AMOUNT: "+max;
+        }
 
     }
 
@@ -145,17 +152,12 @@ public class ChestRatioStorage {
                     //TODO: Enchantments
                 }
 
-
-
                 items.add(stack);
-
-
             }
 
-
-
-
         }
+        
+        //Bukkit.broadcastMessage(items+"");
         return items;
 
 

@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -86,6 +87,10 @@ public class LoggingManager implements  Listener{
     @EventHandler(priority = EventPriority.MONITOR)
     public void blockChanged(LeavesDecayEvent e){
         logBlockDestoryed(e.getBlock());
+    }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void blockChanged(BlockFromToEvent e){
+        logBlockCreated(e.getBlock());
     }
     
     public void blockChange(BlockPistonExtendEvent e){

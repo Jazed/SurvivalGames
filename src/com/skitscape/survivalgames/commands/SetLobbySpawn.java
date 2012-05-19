@@ -14,7 +14,7 @@ public class SetLobbySpawn implements SubCommand {
             return true;
         }
         SettingsManager.getInstance().setLobbySpawn(player.getLocation());
-        player.sendMessage(ChatColor.GREEN+"Lobby spawnpont set!");
+        player.sendMessage(ChatColor.GREEN+"Lobby spawnpoint set!");
         return true;
     }
     

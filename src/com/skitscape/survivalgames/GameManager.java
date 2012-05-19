@@ -3,6 +3,7 @@ package com.skitscape.survivalgames;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 
 import org.bukkit.ChatColor;
@@ -23,7 +24,7 @@ public class GameManager {
     private ArrayList<Game>games = new ArrayList<Game>();
     private SurvivalGames p;
     public static HashMap<Integer, HashSet<Block>>openedChest = new HashMap<Integer, HashSet<Block>>();
-
+    private ArrayList<Integer>gamemap = new ArrayList<Integer>();
 
     private GameManager(){
 
@@ -40,15 +41,32 @@ public class GameManager {
             openedChest.put(g.getID(), new HashSet<Block>());
         }
     }
+    
+    public Plugin getPlugin(){
+        return p;
+    }
 
+    public void reloadGames(){
+        LoadGames();
+    }
     
 
     public void LoadGames(){
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
-        for(int a = 1; a<= c.getInt("sg-system.arenano",0); a++){
-            System.out.println("Loading Arena: "+a);
-            games.add(new Game(a));
+        games.clear();
+        int no = c.getInt("sg-system.arenano", 0);
+        int loaded = 0;
+        int a = 1;
+        while(loaded < no){
+            if(c.isSet("sg-system.arenas."+a+".x1")){
+                System.out.println("Loading Arena: "+a);
+                loaded ++;
+                games.add(new Game(a));
+               // gamemap.add(loaded);
+            }
+            a++;
         }
+        LobbyManager.getInstance().clearSigns();
     }
 
 
@@ -62,6 +80,7 @@ public class GameManager {
     }
 
     public int getPlayerGameId(Player p){
+        
         for(Game g:games){
             if(g.isPlayerActive(p)){
                 return g.getID();
@@ -92,6 +111,7 @@ public class GameManager {
     }
 
     public Game getGame(int a){
+        //int t = gamemap.get(a);
         for(Game g: games){
             if(g.getID() == a){
                 return g;
@@ -163,10 +183,7 @@ public class GameManager {
     public void createArenaFromSelection(Player pl){
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
         SettingsManager s = SettingsManager.getInstance();
-        if(c.getString("sg-system.world") == null){
-            c.set("sg-system.world", pl.getWorld().getName());
-            s.saveSystemConfig();
-        } 
+
 
         WorldEditPlugin we = p.getWorldEdit();
         Selection sel = we.getSelection(pl);
@@ -185,6 +202,11 @@ public class GameManager {
 
         int no = c.getInt("sg-system.arenano") + 1;
         c.set("sg-system.arenano", no);
+        if(games.size() == 0){
+            no = 1;
+        }
+        else
+            no = games.get(games.size()-1).getID() + 1;
         c.set("sg-system.arenas."+no+".world", max.getWorld().getName());
         c.set("sg-system.arenas."+no+".x1", max.getBlockX());
         c.set("sg-system.arenas."+no+".y1", max.getBlockY());
@@ -197,8 +219,7 @@ public class GameManager {
 
         hotAddArena(no);
 
-        if(no == 1)
-            pl.sendMessage(ChatColor.GREEN+"SurvivalGame World set to "+ c.getString("sg-system.world"));
+       
         pl.sendMessage(ChatColor.GREEN+"Arena ID "+no+" Succesfully added");
 
     }

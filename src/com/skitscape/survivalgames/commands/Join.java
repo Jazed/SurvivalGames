@@ -4,12 +4,13 @@ package com.skitscape.survivalgames.commands;
 import org.bukkit.entity.Player;
 
 import com.skitscape.survivalgames.GameManager;
+import com.skitscape.survivalgames.SettingsManager;
 
 public class Join implements SubCommand{
 
     public boolean onCommand(Player player, String[] args) {
 
-        GameManager.getInstance().autoAddPlayer(player);
+        player.teleport(SettingsManager.getInstance().getLobbySpawn());
         return true;
 
 
@@ -17,7 +18,7 @@ public class Join implements SubCommand{
 
     @Override
     public String help(Player p) {
-        return "/sg setlobbywall - Setings the lobby stats wall";
+        return "/sg join - Join the lobby";
     }
 }
 

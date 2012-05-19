@@ -9,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.skitscape.survivalgames.Game;
 import com.skitscape.survivalgames.GameManager;
 import com.skitscape.survivalgames.SettingsManager;
 
@@ -21,8 +22,8 @@ public class SetSpawn implements SubCommand{
     }
 
     public void loadNextSpawn(){
-        for(int a = 1; a<=GameManager.getInstance().getGameCount();a++){
-            next.put(a, SettingsManager.getInstance().getSpawnCount(a)+1);
+        for(Game g:GameManager.getInstance().getGames().toArray(new Game[0])){ //Avoid Coccurency problems
+            next.put(g.getID(), SettingsManager.getInstance().getSpawnCount(g.getID())+1);
         }
     }
     

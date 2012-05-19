@@ -29,12 +29,12 @@ public class ChestReplaceEvent implements Listener{
         if(!(e.getAction()==Action.RIGHT_CLICK_BLOCK)) return;
         
         Block clickedBlock = e.getClickedBlock(); 
-        int gameid = GameManager.getInstance().getBlockGameId(clickedBlock.getLocation());
+        int gameid = GameManager.getInstance().getPlayerGameId(e.getPlayer());
         if(gameid == -1) return;
-
-        if(GameManager.getInstance().getGame(gameid).getMode() != GameMode.INGAME)return;
-
-        if(GameManager.getInstance().openedChest.get(gameid) !=null)openedChest3.addAll(GameManager.openedChest.get(gameid));
+        GameManager gm = GameManager.getInstance();
+        if(!gm.isPlayerActive(e.getPlayer())) return;
+        if(gm.getGame(gameid).getMode() != GameMode.INGAME)return;
+        if(GameManager.openedChest.get(gameid) !=null)openedChest3.addAll(GameManager.openedChest.get(gameid));
         if(openedChest3.contains(clickedBlock))return;
         Inventory inv;
         int size = 0;

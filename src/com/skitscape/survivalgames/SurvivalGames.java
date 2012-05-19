@@ -1,8 +1,11 @@
 package com.skitscape.survivalgames;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -23,67 +26,83 @@ public class SurvivalGames extends JavaPlugin {
     private static File datafolder;
     private static boolean active = false;
     public static boolean dbcon = false;
-
+    
+    public static List<String> auth = Arrays.asList(new String[]{"Double0negative","iMalo","Beechboy2000", "Medic0987","alex_markey", "Skitscape","Antvenom", "YoshiGenius"});
+    
+    SurvivalGames p = this;
     public void onDisable() {
         active = false;
-        PluginDescriptionFile pdfFile = this.getDescription();
+        PluginDescriptionFile pdfFile = p.getDescription();
         SettingsManager.getInstance().saveSpawns();
         SettingsManager.getInstance().saveSystemConfig();
-        this.logger.info("The" + pdfFile.getName() + "version" + pdfFile.getVersion() + "has now been disabled and reset");
+        for(Game g: GameManager.getInstance().getGames()){
+            g.disable();
+        }
+               
+        logger.info("The" + pdfFile.getName() + "version" + pdfFile.getVersion() + "has now been disabled and reset");
     }
 
     public void onEnable() {
-        logger = this.getLogger();
-        active = true;
-        datafolder = this.getDataFolder();
-        PluginManager pm = getServer().getPluginManager();
-        setCommands();
+        //endsure that all worlds are loaded. Fixes some issues with Multiverse loading after this plugin had started
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Startup(), 40);
 
-
-        SettingsManager.getInstance().setup(this);
-
-        try{
-            DatabaseManager.getInstance().setup(this);
-            QueueManager.getInstance().setup(this);
-            dbcon = true;
-        }
-        catch(Exception e){
-            dbcon = false;
-            logger.severe("!!!Failed to connect to the database. Please check the settings and try again!!!");
-            return;
-        }
-        finally{
-            LobbyManager.getInstance().setup(this);
-
-        }
-        ChestRatioStorage.getInstance().setup();
-
+    }
+    
+    class Startup implements Runnable{
         
-        pm.registerEvents(new PlaceEvent(), this);
-        pm.registerEvents(new BreakEvent(), this);
-        pm.registerEvents(new DeathEvent(), this);
-        pm.registerEvents(new MoveEvent(), this);
-        pm.registerEvents(new CommandCatch(), this);
-        pm.registerEvents(new SignClickEvent(), this);
-        pm.registerEvents(new ChestReplaceEvent(), this);
-        pm.registerEvents(new LogoutEvent(), this);
-        pm.registerEvents(new JoinEvent(), this);
-        pm.registerEvents(new TeleportEvent(), this);
-        pm.registerEvents(LoggingManager.getInstance(), this);
+        public void run(){
+            logger = p.getLogger();
+            active = true;
+            datafolder = p.getDataFolder();
+            PluginManager pm = getServer().getPluginManager();
+            setCommands();
+
+
+            SettingsManager.getInstance().setup(p);
+
+            try{
+                DatabaseManager.getInstance().setup(p);
+                QueueManager.getInstance().setup(p);
+                dbcon = true;
+            }
+            catch(Exception e){
+                dbcon = false;
+                logger.severe("!!!Failed to connect to the database. Please check the settings and try again!!!");
+                return;
+            }
+            finally{
+                LobbyManager.getInstance().setup(p);
+
+            }
+            ChestRatioStorage.getInstance().setup();
+
+            
+            pm.registerEvents(new PlaceEvent(), p);
+            pm.registerEvents(new BreakEvent(), p);
+            pm.registerEvents(new DeathEvent(), p);
+            pm.registerEvents(new MoveEvent(), p);
+            pm.registerEvents(new CommandCatch(), p);
+            pm.registerEvents(new SignClickEvent(), p);
+            pm.registerEvents(new ChestReplaceEvent(), p);
+            pm.registerEvents(new LogoutEvent(), p);
+            pm.registerEvents(new JoinEvent(), p);
+            pm.registerEvents(new TeleportEvent(), p);
+            pm.registerEvents(LoggingManager.getInstance(), p);
 
 
 
-      //  new Webserver().start();
-        
+          //  new Webserver().start();
+            
 
-        GameManager.getInstance().setup(this);
+            GameManager.getInstance().setup(p);
 
 
 
+        }
     }
 
     public void setCommands(){
-        getCommand("survivalgames").setExecutor(new CommandHandler(this));
+        getCommand("survivalgames").setExecutor(new CommandHandler(p));
     }
 
 

@@ -26,8 +26,8 @@ public class ArenaDuplicator {
         int xspan = v2.getBlockX() - v1.getBlockX();
         int maxx = GameManager.getInstance().getGame(1).getArena().getMax().getBlockX();
         for(Game g: GameManager.getInstance().getGames()){
-            Vector a1 = g.getArena().getMin();
-            Vector a2 = g.getArena().getMax();
+            Location a1 = g.getArena().getMin();
+            Location a2 = g.getArena().getMax();
 
             if(a1.getBlockX()>maxx){
                 maxx = a1.getBlockX();

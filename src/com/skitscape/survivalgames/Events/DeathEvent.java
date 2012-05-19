@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -26,7 +27,7 @@ public class DeathEvent implements Listener {
 		}
 	}
 	
-	@EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDieEvent(EntityDamageEvent event) {
 	    if(event.getEntity() instanceof Player){}
 	    else 
@@ -64,7 +65,7 @@ public class DeathEvent implements Listener {
 	                    l.getWorld().dropItemNaturally(l, i);
 	            }
 		    
-		      GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).killPlayer(player);
+		      GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).killPlayer(player, false);
 
 		}
 	}

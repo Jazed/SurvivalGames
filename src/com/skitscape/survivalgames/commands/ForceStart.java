@@ -19,7 +19,13 @@ public class ForceStart implements SubCommand {
             player.sendMessage(ChatColor.RED+ "No Permission");
             return true;
         }
-        int game  = GameManager.getInstance().getPlayerGameId(player);
+        int game = -1;
+        if(args.length == 1){
+            game = Integer.parseInt(args[0]);
+            
+        }
+        else
+            game  = GameManager.getInstance().getPlayerGameId(player);
         if(game == -1){
             player.sendMessage(ChatColor.RED+"Must be in a game!");
             return true;
@@ -28,7 +34,9 @@ public class ForceStart implements SubCommand {
             player.sendMessage(ChatColor.RED+"Needs at least 2 players to start!");
             return true;
         }
-		GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).countdown(10);
+        
+		GameManager.getInstance().getGame(game).countdown(10);
+		player.sendMessage(ChatColor.GREEN+"Started arena "+game);
 		
 		return true;
 	}

@@ -42,7 +42,6 @@ public class SignClickEvent implements Listener{
                 }
                 else{
                     String game = lines[2].replace("Arena ", "");
-                    System.out.println("["+game+"]");
                     int gameno  = Integer.parseInt(game);
                     
                     GameManager.getInstance().addPlayer(e.getPlayer(), gameno);

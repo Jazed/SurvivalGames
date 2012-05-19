@@ -38,14 +38,14 @@ public class SettingsManager {
 
         p.getConfig().options().copyDefaults(true);
         p.saveDefaultConfig();
-        
+
         f = new File(p.getDataFolder(),"spawns.yml");
         f2 = new File(p.getDataFolder(),"system.yml");
         try{
-        if(!f.exists())
-            f.createNewFile();
-        if(!f2.exists())
-            f2.createNewFile();
+            if(!f.exists())
+                f.createNewFile();
+            if(!f2.exists())
+                f2.createNewFile();
         }catch(Exception e){}
         reloadSystem();
         saveSystemConfig();
@@ -58,33 +58,40 @@ public class SettingsManager {
     public void set(String arg0, Object arg1){
         p.getConfig().set(arg0, arg1);
     }
-    
+
     public FileConfiguration getConfig(){
         return p.getConfig();
     }
-    
+
     public FileConfiguration getSystemConfig(){
         return system;
     }
     
-    public void saveConfig(){
-       // p.saveConfig();
+    public FileConfiguration getSpawns(){
+        return spawns;
     }
-    
+
+    public void saveConfig(){
+        // p.saveConfig();
+    }
+
     public static World getGameWorld(int game){
-        if(SettingsManager.getInstance().getSystemConfig().getString("sg-system.arenas."+game+".world") == null)
+        if(SettingsManager.getInstance().getSystemConfig().getString("sg-system.arenas."+game+".world") == null){
+            LobbyManager.getInstance().error(true);
             return null;
+
+        }
         return p.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("sg-system.arenas."+game+".world"));
     }
-    
+
     public void reloadSpawns(){
         spawns = YamlConfiguration.loadConfiguration(f);
     }
-    
+
     public void reloadSystem(){
         system = YamlConfiguration.loadConfiguration(f2);
     }
-    
+
     public void saveSystemConfig(){
         try {
             system.save(f2);
@@ -93,7 +100,7 @@ public class SettingsManager {
             e.printStackTrace();
         }
     }
-    
+
     public void saveSpawns(){
         try {
             spawns.save(f);
@@ -102,50 +109,50 @@ public class SettingsManager {
             e.printStackTrace();
         }
     }
-    
+
     public int getSpawnCount(int gameid){
         return spawns.getInt("spawns."+gameid+".count");
     }
-    
-    
-    
+
+
+
     //TODO: Implement per-arena settings aka flags
     public HashMap<String, Object> getGameFlags(int a){
         HashMap<String, Object>flags = new HashMap<String, Object>();
-        
+
         flags.put("AUTOSTART_PLAYERS", system.getInt("sg-system.arenas."+a+".flags.autostart"));
         flags.put("AUTOSTART_VOTE", system.getInt("sg-system.arenas."+a+".flags.vote"));
         flags.put("ENDGAME_ENABLED", system.getBoolean("sg-system.arenas."+a+".flags.endgame-enabled"));
         flags.put("ENDGAME_PLAYERS", system.getInt("sg-system.arenas."+a+".flags.endgame-players"));
 
         return flags;
-        
+
     }
     public void saveGameFlags(HashMap<String, Object>flags, int a){
-        
+
         system.set("sg-system.arenas."+a+".flags.autostart", flags.get("AUTOSTART_PLAYERS"));
         system.set("sg-system.arenas."+a+".flags.vote", flags.get("AUTOSTART_VOTE"));
         system.set("sg-system.arenas."+a+".flags.autostart", flags.get("AUTOSTART_PLAYERS"));
         system.set("sg-system.arenas."+a+".flags.autostart", flags.get("AUTOSTART_PLAYERS"));
 
-        
-        
+
+
     }
-    
+
     public Location getLobbySpawn(){
         return new Location(Bukkit.getWorld(system.getString("sg-system.lobby.spawn.world")), 
-            system.getInt("sg-system.lobby.spawn.x"), 
-            system.getInt("sg-system.lobby.spawn.y"),
-            system.getInt("sg-system.lobby.spawn.z"));
+                system.getInt("sg-system.lobby.spawn.x"), 
+                system.getInt("sg-system.lobby.spawn.y"),
+                system.getInt("sg-system.lobby.spawn.z"));
     }
-    
+
     public void setLobbySpawn(Location l){
-            system.set("sg-system.lobby.spawn.world", l.getWorld().getName());
-            system.set("sg-system.lobby.spawn.x", l.getBlockX());
-            system.set("sg-system.lobby.spawn.y", l.getBlockY());
-            system.set("sg-system.lobby.spawn.z", l.getBlockZ());
+        system.set("sg-system.lobby.spawn.world", l.getWorld().getName());
+        system.set("sg-system.lobby.spawn.x", l.getBlockX());
+        system.set("sg-system.lobby.spawn.y", l.getBlockY());
+        system.set("sg-system.lobby.spawn.z", l.getBlockZ());
     }
-    
+
     public Location getSpawnPoint(int gameid, int spawnid){
         return new Location(getGameWorld(gameid), 
                 spawns.getInt("spawns."+gameid+"."+spawnid+".x"), 
@@ -162,9 +169,9 @@ public class SettingsManager {
         try {
             spawns.save(f);
         } catch (IOException e) {
-            
+
         }
         GameManager.getInstance().getGame(gameid).addSpawn();
-        
+
     }
 }

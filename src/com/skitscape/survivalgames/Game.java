@@ -7,8 +7,13 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -31,6 +36,7 @@ public class Game {
 
     private Arena arena;
     private int gameID;
+    private int arenano;
     private int gcount = 0;
     private FileConfiguration c;
     private FileConfiguration s;
@@ -39,9 +45,11 @@ public class Game {
     private int spawnCount = 0;
     private int vote = 0;
     private boolean disabled = false;
-
+    private int endgameTaskID = 0;
+    private boolean endgameRunning = false;
 
     private long startTime = 0;
+    private boolean countdownRunning;
 
     public Game(int gameid){
         gameID = gameid;
@@ -65,7 +73,9 @@ public class Game {
         int z1     = s.getInt("sg-system.arenas."+gameID+".z2");
         System.out.println(x1+ " "+ y1 +" "+z1);
         Location max = new Location(SettingsManager.getGameWorld(gameID),Math.max(x, x1),Math.max(y, y1),Math.max(z, z1));
+        System.out.println(max.toString());
         Location min = new Location(SettingsManager.getGameWorld(gameID),Math.min(x, x1),Math.min(y, y1),Math.min(z, z1));
+        System.out.println(min.toString());
 
 
         arena = new Arena(min,max);
@@ -116,7 +126,10 @@ public class Game {
     public void resetArena(){
         vote = 0;
         voted.clear();
+
         mode = GameMode.RESETING;
+        endgameRunning = false;
+        Bukkit.getScheduler().cancelTask(endgameTaskID);
         GameManager.getInstance().gameEndCallBack(gameID);
         GameReset r = new GameReset(this);
         r.resetArena();
@@ -127,6 +140,7 @@ public class Game {
             enable();
         else
             mode = GameMode.DISABLED;
+
     }
 
 
@@ -150,7 +164,6 @@ public class Game {
                 boolean placed = false;
 
                 for(int a = 1; a<=SettingsManager.getInstance().getSpawnCount(gameID); a++){
-                    System.out.println(spawns.get(a) == null);
                     if(spawns.get(a) == null){
                         p.teleport(SettingsManager.getInstance().getSpawnPoint(gameID, a));
                         placed = true;
@@ -177,7 +190,7 @@ public class Game {
             for(Player pl:activePlayers){
                 pl.sendMessage(ChatColor.GREEN+p.getName()+" joined the game!");
             }
-            if(activePlayers.size() >= c.getInt("auto-start-players"))
+            if(activePlayers.size() >= c.getInt("auto-start-players") && !countdownRunning)
                 countdown(c.getInt("auto-start-time"));
             return true;
         }
@@ -186,7 +199,7 @@ public class Game {
         else if(mode == GameMode.DISABLED)
             p.sendMessage(ChatColor.RED+"Arena disabled!");
         else if(mode == GameMode.RESETING)
-            p.sendMessage(ChatColor.RED+"The arena is resting!");
+            p.sendMessage(ChatColor.RED+"The arena is reseting!");
         else
             p.sendMessage(ChatColor.RED+"Cannot join the game!");
 
@@ -213,7 +226,7 @@ public class Game {
     }
     public void removePlayer(Player p){
         if(mode == GameMode.INGAME){
-            killPlayer(p);
+            killPlayer(p, true);
             p.teleport(SettingsManager.getInstance().getLobbySpawn());
 
         }
@@ -233,7 +246,13 @@ public class Game {
         return gameID;
     }
 
-    public void killPlayer(Player p){
+
+    public void playerLeave(Player p){
+
+
+    }
+
+    public void killPlayer(Player p, boolean left){
         if(!activePlayers.contains(p))
             return;
         if(!p.isOnline())
@@ -243,9 +262,41 @@ public class Game {
 
         activePlayers.remove(p);
         inactivePlayers.add(p);
-        if(mode != GameMode.WAITING && getActivePlayers() >1){
+        if(left){
             for(Player pl: getAllPlayers()){
-                pl.sendMessage(ChatColor.YELLOW+"Player "+p.getName()+" died. There are now "+getActivePlayers()+" players remaining!");
+                pl.sendMessage(ChatColor.YELLOW+p.getName()+" left the arena");
+            }
+        }
+        else{
+            if(mode != GameMode.WAITING && getActivePlayers() >1){
+                String damagemsg = "";
+                switch(p.getLastDamageCause().getCause()){
+                case BLOCK_EXPLOSION: damagemsg = "{player} Exploded";
+                break;
+                case DROWNING: damagemsg = "{player} Drowned";
+                break;
+                case ENTITY_ATTACK: damagemsg = EntDmgMsg(p, p.getLastDamageCause());
+                break;
+                case FALL: damagemsg = "{player} hit the ground too hard!";
+                break;
+                case LAVA: damagemsg = "{player} burned in lava!";
+                break;
+                case FIRE: damagemsg = "{player} burned to death!";
+                break;
+                case FIRE_TICK: damagemsg = "{player} burned to death!";
+                break;
+                case STARVATION: damagemsg = "{player} starved to death!";
+                break;
+                case ENTITY_EXPLOSION: damagemsg = "{player} was creeper bombed!";
+                break;
+                default: damagemsg = "{player} died";
+                break;
+                }
+                damagemsg = damagemsg.replace("{player}", (SurvivalGames.auth.contains(p.getName())?ChatColor.DARK_RED +""+ChatColor.BOLD:"") + p.getName() +ChatColor.RESET+""+ ChatColor.YELLOW);
+
+                for(Player pl: getAllPlayers()){
+                    pl.sendMessage(ChatColor.YELLOW+damagemsg +" There are now "+getActivePlayers()+" players remaining!");
+                }
             }
         }
 
@@ -255,6 +306,12 @@ public class Game {
             l.getWorld().strikeLightningEffect(l);
         }
 
+        if(getActivePlayers() <= c.getInt("endgame.players") && c.getBoolean("endgame.fire-lighting.enabled")){
+            endgameRunning = true;
+
+            new EndgameManager().start();
+        }
+
 
 
         if(activePlayers.size() == 1 && mode != GameMode.WAITING){
@@ -262,6 +319,51 @@ public class Game {
             endGame();
         }
     }
+
+    public String EntDmgMsg(Player p, EntityDamageEvent e){
+        if(e.getEntityType() == EntityType.PLAYER){
+            try{
+                Player e1 = p.getKiller();
+                Material m = e1.getItemInHand().getType();
+                return (SurvivalGames.auth.contains(e1.getName())?ChatColor.DARK_RED +""+ChatColor.BOLD:"")+e1.getName()+ChatColor.RESET+""+ChatColor.YELLOW +" Killed {player} with "+ m;
+            }
+            catch(Exception e7){
+                return "{player} was killed. ";
+            }
+
+        }
+        else{
+            String msg = "";
+            switch(e.getEntityType()){
+            case CREEPER:
+                msg = "{player} was Creeper bombed";
+                break;
+            case GHAST:
+                msg = "{player} was fireballed by a ghast";
+                break;
+            case ARROW:
+                Player p5 = (Player)e;
+                msg = p5.getName() + " shot {player}";
+                break;
+            case LIGHTNING:
+                msg = "{player} was electrocuted";
+                break;
+            case CAVE_SPIDER:
+                msg = "{player} was killed by a Cave Spider";
+                break;
+            default:
+                msg = "{player} was killed a " + e.getEntityType().toString().toLowerCase();
+                break;
+            }
+            return msg;
+        }
+
+    }
+
+
+
+
+
 
     public void playerWin(Player p){
         Player win = activePlayers.get(0);
@@ -284,7 +386,7 @@ public class Game {
 
     public boolean isProtectionOn(){
         long t = startTime / 1000;
-        long l = SettingsManager.getInstance().getConfig().getLong("damage-time-limit");
+        long l = SettingsManager.getInstance().getConfig().getLong("grace-period");
         long d = new Date().getTime() /1000;
 
         if((d - t) < l)return true;
@@ -296,7 +398,7 @@ public class Game {
         mode = GameMode.WAITING;
         resetArena();
         LobbyManager.getInstance().clearSigns();
-
+        endgameRunning = false;
     }
 
     ArrayList<Player>voted = new ArrayList<Player>();
@@ -308,6 +410,7 @@ public class Game {
         }
         vote++;
         voted.add(pl);
+        pl.sendMessage(ChatColor.GREEN+"Voted to start the game!");
         for(Player p: activePlayers){
             p.sendMessage(ChatColor.AQUA+pl.getName()+" Voted to start the game!");
         }
@@ -318,6 +421,7 @@ public class Game {
                 p.sendMessage("Game Starting in "+c.getInt("auto-start-time"));
             }
         }
+
     }
 
     public void saveInv(Player p){
@@ -377,11 +481,24 @@ public class Game {
                 gcount++;
                 new NightChecker().start();
             }
+            if(SettingsManager.getInstance().getConfig().getInt("grace-period") !=0){
+                for(Player play: activePlayers){
+                    play.sendMessage(ChatColor.LIGHT_PURPLE+"You have a "+SettingsManager.getInstance().getConfig().getInt("grace-period")+" second grace period!");
+                }
+                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(GameManager.getInstance().getPlugin(), new Runnable(){
+                    public void run(){
+                        for(Player play: activePlayers){
+                            play.sendMessage(ChatColor.LIGHT_PURPLE+"Grace period has ended!");
+                        }
+                    }}, SettingsManager.getInstance().getConfig().getInt("grace-period") * 20);
+            }
 
-            mode = GameMode.INGAME;
         }
 
+        mode = GameMode.INGAME;
     }
+
+
 
     public int getCountdownTime(){
         return counttime;
@@ -392,6 +509,7 @@ public class Game {
     public void countdown(int time){
         threadsync++;
         mode = GameMode.STARTING;
+        countdownRunning = true;
         counttime = time;
         if(time<11){
             for(Player p: activePlayers){
@@ -402,6 +520,7 @@ public class Game {
             new CountdownThread(time).start();
         }
         else if(SurvivalGames.isActive() && time <= 0){
+            countdownRunning = false;
             startGame();
         }
         else
@@ -443,6 +562,23 @@ public class Game {
         }
 
 
+    }
+
+    class EndgameManager extends Thread{
+
+        @Override
+        public void run() {
+            while(endgameRunning){
+                for(Player player:activePlayers){
+                    Location l = player.getLocation();
+                    l.add(0, 5, 0);
+                    player.getWorld().strikeLightningEffect(l);
+                }
+                try{Thread.sleep(SettingsManager.getInstance().getConfig().getInt("endgame.fire-lighting.interval") * 1000);}catch(Exception e){};
+
+            }
+
+        }
     }
 
     public boolean isPlayerActive(Player player) {

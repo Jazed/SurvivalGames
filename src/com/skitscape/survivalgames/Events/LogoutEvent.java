@@ -17,7 +17,7 @@ public class LogoutEvent implements Listener{
         int id = GameManager.getInstance().getPlayerGameId(p);
         if(id == -1) return;
         if(GameManager.getInstance().getGameMode(id)==Game.GameMode.INGAME)
-            GameManager.getInstance().getGame(id).killPlayer(p);
+            GameManager.getInstance().getGame(id).killPlayer(p, true);
         else
             GameManager.getInstance().getGame(id).removePlayer(p);
     }

@@ -24,7 +24,6 @@ public class LobbyManager  implements Listener{
     SurvivalGames p;
     private int runningThread = 0;
     private static LobbyManager instance = new LobbyManager();
-
     private LobbyManager(){
 
     }
@@ -106,7 +105,7 @@ public class LobbyManager  implements Listener{
             }
         }
         runningThread ++;
-        showMessage(new String[]{"", "Survival Games","","","Double0negative                    Beechboy200" ,"skitscape.com", "voidmc.com"});
+        showMessage(new String[]{"", "Survival Games","","Double0negative","YoshiGenius      iMalo         Beechboy2000" ,"skitscape.com", "voidmc.com"});
         // try{Thread.sleep(4000);}catch(Exception e){}
     }
 
@@ -133,7 +132,7 @@ public class LobbyManager  implements Listener{
             pl.sendMessage(ChatColor.RED+"You must make a WorldEdit Selection first");
             return;
         }
-        if( (sel.getNativeMaximumPoint().getBlockX()  - sel.getNativeMaximumPoint().getBlockX()) != 0 && (sel.getNativeMaximumPoint().getBlockY()  - sel.getNativeMaximumPoint().getBlockY() !=0)){
+        if( (sel.getNativeMaximumPoint().getBlockX()  - sel.getNativeMaximumPoint().getBlockX()) != 0 && (sel.getNativeMaximumPoint().getBlockZ()  - sel.getNativeMaximumPoint().getBlockZ() !=0)){
             pl.sendMessage(ChatColor.RED +" Must be in a straight line!");
             return;
         }
@@ -158,6 +157,7 @@ public class LobbyManager  implements Listener{
 
     boolean showingMessage = false;
     ArrayList<String[]>messagequeue = new ArrayList<String[]>(3);
+    private boolean error;
 
     public void showMessage(String[] msg9){
         new ThreadMessageDisplay(msg9).start();
@@ -176,7 +176,7 @@ public class LobbyManager  implements Listener{
     }
 
     public void signShowMessage(String[] msg){
-        signShowMessage(msg, 7000);
+        signShowMessage(msg, 5000);
     }
 
     public void signShowMessage(String[] msg9, long wait){
@@ -225,7 +225,8 @@ public class LobbyManager  implements Listener{
             }
         }
 
-        for(String[] msg:messagequeue){
+        for(int c = 0; c<messagequeue.size(); c++){
+            String[] msg = messagequeue.get(c);
             int x = getSignMidPoint()[1] - (msg.length / 2);
             int lineno = x%3;
             x = x / 4;
@@ -268,8 +269,11 @@ public class LobbyManager  implements Listener{
             int trun = runningThread;
 
             while(SurvivalGames.isActive() && trun == runningThread){
-                try{Thread.sleep(1000);}catch(Exception e){}
-                updateGameStatus();
+                try{
+                    try{Thread.sleep(1000);}catch(Exception e){}
+                    updateGameStatus();
+                }catch(Exception e){e.printStackTrace(); signs[0][0].setLine(1, ChatColor.RED+"ERROR");signs[0][0].setLine(1, ChatColor.RED+"Check Console");}
+
             }
         }
     }
@@ -288,52 +292,63 @@ public class LobbyManager  implements Listener{
             signs[b][0].update();
             return;
         }
-        for(int a = 1; a<=GameManager.getInstance().getGameCount();a++){
-            signs[b][0].setLine(0, "[SurvivalGames]");
-            signs[b][0].setLine(1, "Click to join");
-            signs[b][0].setLine(2, "Arena "+a);
-            signs[b][1].setLine(0, "Arena "+a);
-            signs[b][1].setLine(1, GameManager.getInstance().getGameMode(a)+"");
-            signs[b][1].setLine(2, GameManager.getInstance().getGame(a).getActivePlayers()+"/"+ChatColor.GRAY+GameManager.getInstance().getGame(a).getInactivePlayers()+ChatColor.BLACK+"/"+SettingsManager.getInstance().getSpawnCount(a));
-            if(GameManager.getInstance().getGameMode(a) == Game.GameMode.STARTING)
-                signs[b][1].setLine(3, GameManager.getInstance().getGame(a).getCountdownTime()+"");
-            else
-                signs[b][1].setLine(3,"");
-            signs[b][0].update();
-            signs[b][1].update();
+        if(error){
+            signs[b][0].setLine(1, ChatColor.RED+"Error");
+        }
+        ArrayList<Game>games = GameManager.getInstance().getGames();
+       // System.out.println(games.toString());
+        for(int a = 0; a<games.size();a++){
+            try{
+                Game game = games.get(a);
+                //System.out.println(game.getMode());
+                signs[b][0].setLine(0, "[SurvivalGames]");
+                signs[b][0].setLine(1, "Click to join");
+                signs[b][0].setLine(2, "Arena "+game.getID());
+                signs[b][1].setLine(0, "Arena "+game.getID());
+                signs[b][1].setLine(1, game.getMode()+"");
+                signs[b][1].setLine(2, game.getActivePlayers()
+                        +"/"+ChatColor.GRAY+game.getInactivePlayers()+ChatColor.BLACK
+                        +"/"+SettingsManager.getInstance().getSpawnCount(game.getID()));
+                if(game.getMode() == Game.GameMode.STARTING)
+                    signs[b][1].setLine(3, game.getCountdownTime()+"");
+                else
+                    signs[b][1].setLine(3,"");
+                signs[b][0].update();
+                signs[b][1].update();
 
-            int signno = 2;
-            int line = 0;
-            Player[] active = GameManager.getInstance().getGame(a).getPlayers()[0];
-            Player[] inactive = GameManager.getInstance().getGame(a).getPlayers()[1];
-            for(Player p:active){
-                if(signno<signs[b].length){
+                int signno = 2;
+                int line = 0;
+                Player[] active = game.getPlayers()[0];
+                Player[] inactive = game.getPlayers()[1];
+                for(Player p:active){
+                    if(signno<signs[b].length){
 
-                    signs[b][signno].setLine(line, p.getName());
-                    signs[b][signno].update();
+                        signs[b][signno].setLine(line, (SurvivalGames.auth.contains(p.getName())?ChatColor.DARK_BLUE:ChatColor.BLACK) +((p.getName().equalsIgnoreCase("Double0negative"))?"Double0":p.getName()));
+                        signs[b][signno].update();
 
-                    line++;
-                    if(line == 4){
-                        line = 0;
-                        signno++;
+                        line++;
+                        if(line == 4){
+                            line = 0;
+                            signno++;
+                        }
                     }
                 }
-            }
-            for(Player p:inactive){
-                if(signno<signs[b].length){
-                    signs[b][signno].setLine(line, ChatColor.GRAY +p.getName());
-                    signs[b][signno].update();
-                    line++;
-                    if(line == 4){
-                        line = 0;
-                        signno++;
+                for(Player p:inactive){
+                    if(signno<signs[b].length){
+                        signs[b][signno].setLine(line, (SurvivalGames.auth.contains(p.getName())?ChatColor.DARK_BLUE:ChatColor.BLACK) +((p.getName().equalsIgnoreCase("Double0negative"))?"Double0":p.getName()));
+                        signs[b][signno].update();
+                        line++;
+                        if(line == 4){
+                            line = 0;
+                            signno++;
 
+                        }
                     }
+
                 }
 
-            }
-
-            b--;
+                b--;
+            }catch(Exception e){e.printStackTrace();signs[0][0].setLine(1, ChatColor.RED+"ERROR");signs[0][0].setLine(1, ChatColor.RED+"Check Console");}
         }
 
     }
@@ -354,6 +369,10 @@ public class LobbyManager  implements Listener{
 
             }
         }
+    }
+   
+    public void error(boolean e){
+        error = e;
     }
 
 }

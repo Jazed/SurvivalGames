@@ -22,7 +22,6 @@ public class Start implements SubCommand {
         }
         
         GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).vote(player);
-        player.sendMessage(ChatColor.GREEN+"Voted to start the game!");
 
         return true;
     }
