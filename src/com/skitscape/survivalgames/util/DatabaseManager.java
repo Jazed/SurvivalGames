@@ -1,4 +1,4 @@
-package com.skitscape.survivalgames.logging;
+package com.skitscape.survivalgames.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import com.skitscape.survivalgames.GameStatus;
 import com.skitscape.survivalgames.SettingsManager;
 
 
@@ -58,7 +57,6 @@ public class DatabaseManager {
         catch (SQLException e)
         {
             log.warning("Couldn't connect to MySQL database. Stopping...\n" + e.getMessage());
-            GameStatus.SQLConnected = false;
             return false;
         }
     }

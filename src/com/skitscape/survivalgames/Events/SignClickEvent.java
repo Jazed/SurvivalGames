@@ -46,7 +46,6 @@ public class SignClickEvent implements Listener{
                     
                     GameManager.getInstance().addPlayer(e.getPlayer(), gameno);
                 }
-                e.getPlayer().getLastDamageCause().getEntity();
 
             }catch(Exception ek){}
         }

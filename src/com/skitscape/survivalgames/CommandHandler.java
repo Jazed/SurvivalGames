@@ -16,11 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import com.skitscape.survivalgames.commands.AddPlayer;
 import com.skitscape.survivalgames.commands.CreateArena;
 import com.skitscape.survivalgames.commands.DelArena;
 import com.skitscape.survivalgames.commands.Disable;
 import com.skitscape.survivalgames.commands.Enable;
+import com.skitscape.survivalgames.commands.Flag;
 import com.skitscape.survivalgames.commands.ForceStart;
 import com.skitscape.survivalgames.commands.GameCount;
 import com.skitscape.survivalgames.commands.Join;
@@ -29,6 +29,7 @@ import com.skitscape.survivalgames.commands.ResetSpawns;
 import com.skitscape.survivalgames.commands.SetLobbySpawn;
 import com.skitscape.survivalgames.commands.SetLobbyWall;
 import com.skitscape.survivalgames.commands.SetSpawn;
+import com.skitscape.survivalgames.commands.Spectate;
 import com.skitscape.survivalgames.commands.Start;
 import com.skitscape.survivalgames.commands.SubCommand;
 
@@ -59,6 +60,9 @@ public class CommandHandler implements CommandExecutor
         commands.put("setlobbyspawn", new SetLobbySpawn());
         commands.put("resetspawns", new ResetSpawns());
         commands.put("delarena", new DelArena());
+        commands.put("flag", new Flag());
+        commands.put("spectate", new Spectate());
+
 
     }
 
@@ -95,7 +99,13 @@ public class CommandHandler implements CommandExecutor
             l.addAll(Arrays.asList(args));
             l.remove(0);
             args = (String[]) l.toArray(new String[0]);
+            if(!commands.containsKey(sub)){
+                player.sendMessage(ChatColor.RED+"Command dosent exist.");
+                player.sendMessage(ChatColor.DARK_AQUA +"Type /sg help for help" );
+                return true;
+            }
             try{
+                
             commands.get(sub).onCommand( player,  args);
             }catch(Exception e){e.printStackTrace(); player.sendMessage(ChatColor.RED+"An error occured while executing the command. Check the      console");                player.sendMessage(ChatColor.BLUE +"Type /sg help for help" );
 }

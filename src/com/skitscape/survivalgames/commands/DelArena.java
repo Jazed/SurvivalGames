@@ -13,6 +13,10 @@ public class DelArena implements SubCommand{
     @Override
     public boolean onCommand(Player player, String[] args) {
         
+        if(!player.hasPermission("sg.arena.delete") && !player.isOp()){
+            player.sendMessage(ChatColor.RED+"No Permission");
+            return true;
+        }
         if(args.length != 1){
             player.sendMessage(ChatColor.RED+"Please specify an arena");
             return true;

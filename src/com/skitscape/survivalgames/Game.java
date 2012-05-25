@@ -3,6 +3,7 @@ package com.skitscape.survivalgames;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,6 +34,7 @@ public class Game {
     private GameMode mode = GameMode.DISABLED;
     private ArrayList<Player> activePlayers = new ArrayList<Player>();
     private ArrayList<Player> inactivePlayers = new ArrayList<Player>();
+    private ArrayList<Player> spectators = new ArrayList<Player>();
 
     private Arena arena;
     private int gameID;
@@ -48,6 +50,8 @@ public class Game {
     private int endgameTaskID = 0;
     private boolean endgameRunning = false;
 
+    private double rbpercent = 0;
+    
     private long startTime = 0;
     private boolean countdownRunning;
 
@@ -104,6 +108,37 @@ public class Game {
 
     public Arena getArena(){
         return arena;
+    }
+
+    public void addSpectator(Player p){
+        p.setAllowFlight(true);
+        p.setFlying(true);
+        saveInv(p);
+        clearInv(p);
+        for(Player pl : activePlayers.toArray(new Player[0])){
+            pl.hidePlayer(p);
+        }
+        p.teleport(SettingsManager.getInstance().getSpawnPoint(gameID, 1));
+        spectators.add(p);
+    }
+
+    public void removeSpectator(Player p){
+        ArrayList<Player>players = new ArrayList<Player>();
+        players.addAll(activePlayers);
+        players.addAll(inactivePlayers);
+
+        for(Player pl:players){
+            pl.showPlayer(p);
+        }
+
+        restoreInv(p);
+
+        p.teleport(SettingsManager.getInstance().getLobbySpawn());
+        spectators.remove(p);
+    }
+
+    public boolean isSpectator(Player p){
+        return spectators.contains(p);
     }
 
     public void disable(){
@@ -183,12 +218,16 @@ public class Game {
                 }
 
             }
-            else{
+            else if(SettingsManager.getInstance().getSpawnCount(gameID) == 0){
                 p.sendMessage(ChatColor.RED + "No spawns set for Arena "+gameID+"!");
                 return false;
             }
+            else{
+                p.sendMessage(ChatColor.RED + "Game "+gameID+" Is Full!");
+                return false;
+            }
             for(Player pl:activePlayers){
-                pl.sendMessage(ChatColor.GREEN+p.getName()+" joined the game!");
+                pl.sendMessage(ChatColor.GREEN+p.getName()+" joined the game! "+getActivePlayers() + "/"+SettingsManager.getInstance().getSpawnCount(gameID));
             }
             if(activePlayers.size() >= c.getInt("auto-start-players") && !countdownRunning)
                 countdown(c.getInt("auto-start-time"));
@@ -271,9 +310,9 @@ public class Game {
             if(mode != GameMode.WAITING && getActivePlayers() >1){
                 String damagemsg = "";
                 switch(p.getLastDamageCause().getCause()){
-                case BLOCK_EXPLOSION: damagemsg = "{player} Exploded";
+                case BLOCK_EXPLOSION: damagemsg = "{player} Exploded!";
                 break;
-                case DROWNING: damagemsg = "{player} Drowned";
+                case DROWNING: damagemsg = "{player} Drowned!";
                 break;
                 case ENTITY_ATTACK: damagemsg = EntDmgMsg(p, p.getLastDamageCause());
                 break;
@@ -289,13 +328,13 @@ public class Game {
                 break;
                 case ENTITY_EXPLOSION: damagemsg = "{player} was creeper bombed!";
                 break;
-                default: damagemsg = "{player} died";
+                default: damagemsg = "{player} died!";
                 break;
                 }
                 damagemsg = damagemsg.replace("{player}", (SurvivalGames.auth.contains(p.getName())?ChatColor.DARK_RED +""+ChatColor.BOLD:"") + p.getName() +ChatColor.RESET+""+ ChatColor.YELLOW);
 
                 for(Player pl: getAllPlayers()){
-                    pl.sendMessage(ChatColor.YELLOW+damagemsg +" There are now "+getActivePlayers()+" players remaining!");
+                    pl.sendMessage(ChatColor.YELLOW+damagemsg +"."+getActivePlayers()+" players remaining!");
                 }
             }
         }
@@ -336,23 +375,23 @@ public class Game {
             String msg = "";
             switch(e.getEntityType()){
             case CREEPER:
-                msg = "{player} was Creeper bombed";
+                msg = "{player} was Creeper bombed!";
                 break;
             case GHAST:
-                msg = "{player} was fireballed by a ghast";
+                msg = "{player} was fireballed by a ghast!";
                 break;
             case ARROW:
                 Player p5 = (Player)e;
-                msg = p5.getName() + " shot {player}";
+                msg = p5.getName() + " shot {player}!";
                 break;
             case LIGHTNING:
-                msg = "{player} was electrocuted";
+                msg = "{player} was electrocuted!";
                 break;
             case CAVE_SPIDER:
-                msg = "{player} was killed by a Cave Spider";
+                msg = "{player} was killed by a Cave Spider!";
                 break;
             default:
-                msg = "{player} was killed a " + e.getEntityType().toString().toLowerCase();
+                msg = "{player} was killed by a " + e.getEntityType().toString().toLowerCase()+"!";
                 break;
             }
             return msg;
@@ -371,7 +410,7 @@ public class Game {
 
         Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA+win.getName()+" won the Survival Games on arena "+gameID);
         win.teleport(SettingsManager.getInstance().getLobbySpawn());
-        LobbyManager.getInstance().showMessage(new String[]{ChatColor.DARK_RED+win.getName(),"",ChatColor.DARK_RED+"Won on arena "+gameID+"!"});
+        LobbyManager.getInstance().showMessage(new String[]{win.getName(),"","Won the ","Survival Games!"});
 
         activePlayers.clear();
         inactivePlayers.clear();
@@ -403,7 +442,9 @@ public class Game {
 
     ArrayList<Player>voted = new ArrayList<Player>();
     public void vote(Player pl){
-        if(GameMode.STARTING == mode)return;
+        
+        if(GameMode.STARTING == mode){pl.sendMessage(ChatColor.GREEN+"Game already starting!");return;}
+        if(GameMode.WAITING != mode){pl.sendMessage(ChatColor.GREEN+"Game already started!");return;}
         if(voted.contains(pl)){
             pl.sendMessage(ChatColor.RED+"You already voted!");
             return;
@@ -418,7 +459,7 @@ public class Game {
         if(((vote +0.0) / (getActivePlayers() +0.0))>(c.getInt("auto-start-vote")+0.0)/100 && getActivePlayers()>2){
             countdown(c.getInt("auto-start-time"));
             for(Player p: activePlayers){
-                p.sendMessage("Game Starting in "+c.getInt("auto-start-time"));
+                p.sendMessage(ChatColor.LIGHT_PURPLE+"Game Starting in "+c.getInt("auto-start-time"));
             }
         }
 
@@ -569,7 +610,7 @@ public class Game {
         @Override
         public void run() {
             while(endgameRunning){
-                for(Player player:activePlayers){
+                for(Player player:activePlayers.toArray(new Player[0])){
                     Location l = player.getLocation();
                     l.add(0, 5, 0);
                     player.getWorld().strikeLightningEffect(l);
@@ -594,6 +635,14 @@ public class Game {
         return mode;
     }
 
+    public synchronized void setRBPercent(double d){
+        rbpercent = d;
+    }
+
+
+    public double getRBPercent() {
+       return rbpercent;
+    }
 
 
     /*public void randomTrap() {

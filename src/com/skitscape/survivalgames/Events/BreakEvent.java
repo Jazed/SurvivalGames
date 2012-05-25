@@ -13,7 +13,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import com.skitscape.survivalgames.Game;
 import com.skitscape.survivalgames.GameManager;
-import com.skitscape.survivalgames.GameStatus;
 import com.skitscape.survivalgames.SettingsManager;
 
 public class BreakEvent implements Listener {

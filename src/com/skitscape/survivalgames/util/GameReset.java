@@ -23,7 +23,6 @@ public class GameReset {
     }
 
     public void resetArena(){
-        removeDrops();
         QueueManager.getInstance().rollback(this,gameid);
 
     }
@@ -32,19 +31,5 @@ public class GameReset {
         g.resetCallback();
     }
 
-    public void removeDrops(){
-        List<Entity> list = SettingsManager.getGameWorld(gameid).getEntities();
-        for (Iterator<Entity> entities = list.iterator();entities.hasNext();){
-            if (entities.hasNext()){
-                Entity entity = entities.next();
-                if (entity instanceof Item){
-                    Item iteme = (Item) entity;
-                        Location loce = entity.getLocation();
-                        if(GameManager.getInstance().getBlockGameId(loce) == gameid){
-                            iteme.remove();
-                    }
-                }
-            }
-        }
-    }
+
 }

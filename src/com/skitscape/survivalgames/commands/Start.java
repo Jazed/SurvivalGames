@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.skitscape.survivalgames.GameManager;
-import com.skitscape.survivalgames.GameStatus;
 
 public class Start implements SubCommand {
     
@@ -20,7 +19,7 @@ public class Start implements SubCommand {
             player.sendMessage(ChatColor.RED+"Must be in a game!");
             return true;
         }
-        
+
         GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameId(player)).vote(player);
 
         return true;

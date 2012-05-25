@@ -14,11 +14,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.skitscape.survivalgames.Events.*;
-import com.skitscape.survivalgames.logging.DatabaseManager;
 import com.skitscape.survivalgames.logging.LoggingManager;
 import com.skitscape.survivalgames.logging.QueueManager;
 import com.skitscape.survivalgames.net.Webserver;
 import com.skitscape.survivalgames.util.ChestRatioStorage;
+import com.skitscape.survivalgames.util.DatabaseManager;
 
 
 public class SurvivalGames extends JavaPlugin {
@@ -27,7 +27,7 @@ public class SurvivalGames extends JavaPlugin {
     private static boolean active = false;
     public static boolean dbcon = false;
     
-    public static List<String> auth = Arrays.asList(new String[]{"Double0negative","iMalo","Beechboy2000", "Medic0987","alex_markey", "Skitscape","Antvenom", "YoshiGenius"});
+    public static List<String> auth = Arrays.asList(new String[]{"Double0negative","iMalo","beechboy2000", "Medic0987","alex_markey", "skitscape","Antvenom", "YoshiGenius", "pimpinpsp", "WinryR", "Jazed2011"});
     
     SurvivalGames p = this;
     public void onDisable() {
@@ -71,6 +71,8 @@ public class SurvivalGames extends JavaPlugin {
                 return;
             }
             finally{
+                GameManager.getInstance().setup(p);
+                
                 LobbyManager.getInstance().setup(p);
 
             }
@@ -85,16 +87,16 @@ public class SurvivalGames extends JavaPlugin {
             pm.registerEvents(new SignClickEvent(), p);
             pm.registerEvents(new ChestReplaceEvent(), p);
             pm.registerEvents(new LogoutEvent(), p);
-            pm.registerEvents(new JoinEvent(), p);
+            pm.registerEvents(new JoinEvent(p), p);
             pm.registerEvents(new TeleportEvent(), p);
             pm.registerEvents(LoggingManager.getInstance(), p);
+            pm.registerEvents(new SpectatorEvents(), p);
 
 
 
           //  new Webserver().start();
             
 
-            GameManager.getInstance().setup(p);
 
 
 

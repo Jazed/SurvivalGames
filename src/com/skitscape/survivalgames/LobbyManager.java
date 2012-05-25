@@ -294,6 +294,9 @@ public class LobbyManager  implements Listener{
         }
         if(error){
             signs[b][0].setLine(1, ChatColor.RED+"Error");
+            signs[b][0].update();
+            return;
+            
         }
         ArrayList<Game>games = GameManager.getInstance().getGames();
        // System.out.println(games.toString());
@@ -311,6 +314,8 @@ public class LobbyManager  implements Listener{
                         +"/"+SettingsManager.getInstance().getSpawnCount(game.getID()));
                 if(game.getMode() == Game.GameMode.STARTING)
                     signs[b][1].setLine(3, game.getCountdownTime()+"");
+                else if(game.getMode() == Game.GameMode.RESETING)
+                    signs[b][1].setLine(3, (int)game.getRBPercent() +"%");
                 else
                     signs[b][1].setLine(3,"");
                 signs[b][0].update();
@@ -356,6 +361,7 @@ public class LobbyManager  implements Listener{
 
 
     public void clearSigns(){
+        try{
         for(int y = signs.length-1; y!=-1; y--){
             for(int a = 0; a<4; a++){
 
@@ -369,6 +375,7 @@ public class LobbyManager  implements Listener{
 
             }
         }
+        }catch(Exception e){}
     }
    
     public void error(boolean e){

@@ -59,6 +59,7 @@ public class GameManager {
         int a = 1;
         while(loaded < no){
             if(c.isSet("sg-system.arenas."+a+".x1")){
+                c.set("sg-system.arenas."+a+".vip",c.getBoolean("sg-system.arenas."+a+".vip", false));
                 System.out.println("Loading Arena: "+a);
                 loaded ++;
                 games.add(new Game(a));
@@ -88,6 +89,15 @@ public class GameManager {
         }
         return -1;
     }
+    
+    public int getPlayerSpectateId(Player p){
+        for(Game g:games){
+            if(g.isSpectator(p)){
+                return g.getID();
+            }
+        }
+        return -1;
+    }
 
     public boolean isPlayerActive(Player player) {
         for(Game g:games){
@@ -100,6 +110,14 @@ public class GameManager {
     public boolean isPlayerInactive(Player player) {
         for(Game g:games){
             if(g.isPlayerActive(player)){
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean isSpectator(Player player) {
+        for(Game g:games){
+            if(g.isSpectator(player)){
                 return true;
             }
         }
@@ -122,6 +140,9 @@ public class GameManager {
 
     public void removePlayer(Player p){           
         getGame(getPlayerGameId(p)).removePlayer(p);
+    }
+    public void removeSpectator(Player p){
+        getGame(getPlayerSpectateId(p)).removeSpectator(p);
     }
     
     public void disableGame(int id){
@@ -184,7 +205,6 @@ public class GameManager {
         FileConfiguration c = SettingsManager.getInstance().getSystemConfig();
         SettingsManager s = SettingsManager.getInstance();
 
-
         WorldEditPlugin we = p.getWorldEdit();
         Selection sel = we.getSelection(pl);
         if(sel == null){
@@ -226,7 +246,7 @@ public class GameManager {
 
     private void hotAddArena(int no) {
         games.add(new Game(no));
-        System.out.println("game added "+ games.size()+" "+SettingsManager.getInstance().getSystemConfig().getInt("gs-system.arenano"));
+        //System.out.println("game added "+ games.size()+" "+SettingsManager.getInstance().getSystemConfig().getInt("gs-system.arenano"));
     }
     
     public void gameEndCallBack(int id){

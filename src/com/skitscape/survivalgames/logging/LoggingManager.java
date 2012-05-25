@@ -90,7 +90,7 @@ public class LoggingManager implements  Listener{
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void blockChanged(BlockFromToEvent e){
-        logBlockCreated(e.getBlock());
+            logBlockDestoryed(e.getBlock());
     }
     
     public void blockChange(BlockPistonExtendEvent e){

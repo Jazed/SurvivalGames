@@ -16,16 +16,11 @@ import org.bukkit.inventory.PlayerInventory;
 
 import com.skitscape.survivalgames.Game;
 import com.skitscape.survivalgames.GameManager;
-import com.skitscape.survivalgames.GameStatus;
 import com.skitscape.survivalgames.SettingsManager;
 
 public class DeathEvent implements Listener {
 	
-	public void deathCheck() {
-		if(GameStatus.playersLeft == 1) {
-			
-		}
-	}
+
 	
     @EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDieEvent(EntityDamageEvent event) {
