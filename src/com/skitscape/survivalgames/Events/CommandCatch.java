@@ -19,7 +19,7 @@ public class CommandCatch implements Listener{
     public void onPlayerDieEvent(PlayerCommandPreprocessEvent event) {
         String m = event.getMessage();
 
-        if(!GameManager.getInstance().isPlayerActive(event.getPlayer()) && !GameManager.getInstance().isPlayerInactive(event.getPlayer()))
+        if(!GameManager.getInstance().isPlayerActive(event.getPlayer()) && !GameManager.getInstance().isPlayerInactive(event.getPlayer()) && !GameManager.getInstance().isSpectator(event.getPlayer()))
             return;
         if(m.equalsIgnoreCase("/list")){
             String act = ChatColor.AQUA+"[Active]";
@@ -33,10 +33,13 @@ public class CommandCatch implements Listener{
 
             event.getPlayer().sendMessage(act);
             event.getPlayer().sendMessage(deact);
+            return;
         }
         if(!SettingsManager.getInstance().getConfig().getBoolean("disallow-commands"))
             return;
-        else if(m.startsWith("/sg") || m.startsWith("/survivalgames")|| m.startsWith("/hg")||m.startsWith("/hungergames")){
+        if(event.getPlayer().isOp() || event.getPlayer().hasPermission("sg.arena.nocmdblock"))
+            return;
+        else if(m.startsWith("/sg") || m.startsWith("/survivalgames")|| m.startsWith("/hg")||m.startsWith("/hungergames")||m.startsWith("/msg")){
             return;
         }
         event.setCancelled(true);

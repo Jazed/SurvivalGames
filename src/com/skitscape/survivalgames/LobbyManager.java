@@ -292,6 +292,11 @@ public class LobbyManager  implements Listener{
             signs[b][0].update();
             return;
         }
+        if(SettingsManager.getInstance().getLobbySpawn() == null){
+            signs[b][0].setLine(1, ChatColor.RED+"No Lobby spawn!");
+            signs[b][0].update();
+            return; 
+        }
         if(error){
             signs[b][0].setLine(1, ChatColor.RED+"Error");
             signs[b][0].update();
@@ -314,8 +319,14 @@ public class LobbyManager  implements Listener{
                         +"/"+SettingsManager.getInstance().getSpawnCount(game.getID()));
                 if(game.getMode() == Game.GameMode.STARTING)
                     signs[b][1].setLine(3, game.getCountdownTime()+"");
-                else if(game.getMode() == Game.GameMode.RESETING)
-                    signs[b][1].setLine(3, (int)game.getRBPercent() +"%");
+                else if(game.getMode() == Game.GameMode.RESETING){
+                    if(game.getRBPercent() > 100){
+                        signs[b][a].setLine(1, "Saving Queue");
+                        signs[b][1].setLine(3, (int)game.getRBPercent() +" left");
+                    }
+                    else
+                        signs[b][1].setLine(3, (int)game.getRBPercent() +"%");
+                }
                 else
                     signs[b][1].setLine(3,"");
                 signs[b][0].update();

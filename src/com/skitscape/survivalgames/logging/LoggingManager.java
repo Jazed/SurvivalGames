@@ -55,7 +55,7 @@ public class LoggingManager implements  Listener{
     public void blockChanged(BlockFadeEvent e){
         logBlockDestoryed(e.getBlock());
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void blockChange(EntityExplodeEvent e){
         for(Block b :e.blockList()){

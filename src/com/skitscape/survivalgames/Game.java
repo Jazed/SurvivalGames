@@ -111,14 +111,20 @@ public class Game {
     }
 
     public void addSpectator(Player p){
-        p.setAllowFlight(true);
-        p.setFlying(true);
+        if(mode == GameMode.DISABLED || mode == GameMode.RESETING){
+            p.sendMessage("Can only spectate running games!");
+            return;
+        }
+        p.teleport(SettingsManager.getInstance().getSpawnPoint(gameID, 1).add(0, 10, 0));
+
         saveInv(p);
         clearInv(p);
         for(Player pl : activePlayers.toArray(new Player[0])){
             pl.hidePlayer(p);
         }
-        p.teleport(SettingsManager.getInstance().getSpawnPoint(gameID, 1));
+
+        p.setAllowFlight(true);
+        p.setFlying(true);
         spectators.add(p);
     }
 
@@ -132,7 +138,8 @@ public class Game {
         }
 
         restoreInv(p);
-
+        p.setAllowFlight(false);
+        p.setFlying(false);
         p.teleport(SettingsManager.getInstance().getLobbySpawn());
         spectators.remove(p);
     }
@@ -152,6 +159,11 @@ public class Game {
             Player p = inactivePlayers.get(a);
             p.sendMessage(ChatColor.RED+"Game disabled");
             removePlayer(p);
+        }
+        for(int a = 0;a<spectators.size(); a = 0){
+            Player p = inactivePlayers.get(a);
+            p.sendMessage(ChatColor.RED+"Game disabled");
+            removeSpectator(p);
         }
         mode = GameMode.DISABLED;
         disabled = true;
@@ -412,9 +424,14 @@ public class Game {
         win.teleport(SettingsManager.getInstance().getLobbySpawn());
         LobbyManager.getInstance().showMessage(new String[]{win.getName(),"","Won the ","Survival Games!"});
 
+        
         activePlayers.clear();
         inactivePlayers.clear();
-
+        for(int a = 0;a<spectators.size(); a = 0){
+            Player pl = spectators.get(a);
+            p.sendMessage(ChatColor.RED+"Game is over!");
+            removeSpectator(pl);
+        }
         spawns.clear();
         loadspawns();
     }

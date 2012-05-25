@@ -104,7 +104,7 @@ public class QueueManager {
                         s.setInt(9, b.getZ());
                         s.setLong(10, new Date().getTime());
                         s.execute();
-                    }catch(Exception e){e.printStackTrace();}
+                    }catch(Exception e){}
                     // }
                     // try{sleep(sleep);}catch(Exception e){}
                 }
@@ -119,6 +119,7 @@ public class QueueManager {
         ResultSet result;
         GameReset r;
         Game game;
+        int taskId = 0;
         private preRollback(GameReset r, int game){
             this.r = r;
             this.id = game;
@@ -126,6 +127,14 @@ public class QueueManager {
             this.game  = GameManager.getInstance().getGame(id);
         }
         public void run(){
+            
+            while(queue.size()>0){
+                game.setRBPercent(queue.size());
+                try{sleep(10);}catch(Exception e){}
+            }
+            
+            
+            
             try{
             String query = "SELECT * FROM SurvivalGames WHERE gameid="+id+" ORDER BY time DESC";
             Statement s = dbman.createStatement();
@@ -144,11 +153,11 @@ public class QueueManager {
                         }
                     }
                 }
+                Rollback rb = new Rollback(result, r, id);
+                int taskid =   Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(p,rb , 0, 1);
+                rb.setTaskId(taskid);
                 
-                taskid =   Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(p, new Rollback(result, r, id), 0, 1);
-                
-                Statement s1 = dbman.createStatement(); 
-                s1.execute("DELETE FROM SurvivalGames WHERE gameid="+id);
+
 
             }catch(Exception e){}
             
@@ -160,7 +169,6 @@ public class QueueManager {
             
         }
         
-    int taskid;
 
     
 
@@ -170,6 +178,7 @@ public class QueueManager {
         ResultSet result;
         GameReset r;
         Game game;
+        int taskID = 0;
         private Rollback(ResultSet rs, GameReset r, int game){
             this.result = rs;
             this.r = r;
@@ -178,6 +187,9 @@ public class QueueManager {
             this.game  = GameManager.getInstance().getGame(id);
         }
 
+        public void setTaskId(int t){
+            taskID = t;
+        }
 
         int rbblocks = 0;
         int total = 0;
@@ -195,8 +207,8 @@ public class QueueManager {
                 int i = 1;
                 boolean done = false;
                 try{
-                    while(i != 100 && !done && result.next()){
-                        //if(!){break;}
+                    while(i != 100 && !done ){
+                        if(!result.next()){break;}
 
                         Location l = new Location(p.getServer().getWorld(result.getString(2)), result.getInt(7), result.getInt(8), result.getInt(9));
                         Block b = l.getBlock();
@@ -207,10 +219,12 @@ public class QueueManager {
                         rbblocks++;
                     }
                     game.setRBPercent(((0.0 + rbblocks) / (0.0+ total))*100);
-                    if(i<100){
+                    if(i<100 && !done){
                         r.rollbackFinishedCallback();
                         done = true;
-                        Bukkit.getScheduler().cancelTask(taskid);
+                        Bukkit.getScheduler().cancelTask(taskID);
+                        Statement s1 = dbman.createStatement(); 
+                        s1.execute("DELETE FROM SurvivalGames WHERE gameid="+id);
                         System.out.println("Arena "+id+" reset. Rolled back "+rbblocks+" blocks");
                     }
                 }catch(Exception e){e.printStackTrace();}
